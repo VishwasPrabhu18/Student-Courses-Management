@@ -1,19 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaSignOutAlt, FaUserAlt } from "react-icons/fa";
 import { UserSidebarLinks } from "../../constants/constants";
 import { useUser } from "../../context/UserContext";
 
 const UserSidebar = () => {
-  const userData = useUser();
+  const { user, handleLogout } = useUser();
   const pathname = window.location.pathname;
-
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-    window.location.reload();
-  };
 
   return (
     <div className="h-screen fixed w-64 bg-gray-900 text-white flex flex-col">
@@ -21,7 +13,7 @@ const UserSidebar = () => {
         <div className="w-14 h-14 rounded-full bg-gray-800 p-4 flex items-center justify-center">
           <FaUserAlt className="w-8 h-8" />
         </div>
-        <h2 className="text-center text-xl font-bold">{ userData.firstName + " " + userData.lastName}</h2>
+        <h2 className="text-center text-xl font-bold">{ user?.firstName && user?.firstName + " " + user?.lastName}</h2>
       </div>
 
       <nav className="flex-1 p-4 space-y-3">

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const token = localStorage.getItem("token");
+  const isUser = token && JSON.parse(atob(token.split(".")[1])).role === "user";
   return (
     <nav className="fixed top-0 left-0 w-full bg-blue-600 text-white shadow-lg z-50">
       <div className="container mx-auto flex justify-between items-center p-4 relative">
@@ -29,7 +30,7 @@ export default function Navbar() {
 
         {/* Right Login Button */}
         <Link
-          to={token ? "/user" : "/login"}
+          to={token ? isUser ? "/user" : "/admin" : "/login"}
           className={`${
             !token
               ? "bg-yellow-400 text-blue-900 hover:bg-yellow-500"

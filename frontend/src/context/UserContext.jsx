@@ -18,19 +18,28 @@ export const UserProvider = ({ children }) => {
 
         if (res.status === 401) {
           localStorage.removeItem("token");
-          setUser(null);
+          setUser({status: 401, message: "Unauthorized"});
           return;
         }
         setUser(res.data);
       } catch (err) {
         console.error("Error fetching user", err);
+        setUser({status: 401, message: "Unauthorized"});
       }
     };
 
-    fetchUser();
+    setTimeout(() => {
+      fetchUser();
+    }, 1000);
   }, []);
 
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  const handleLogout = () => {
+    window.location.href = "/login";
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  return <UserContext.Provider value={{ user, handleLogout }}>{children}</UserContext.Provider>;
 };
 
 export const useUser = () => useContext(UserContext);

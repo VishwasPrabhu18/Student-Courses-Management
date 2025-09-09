@@ -1,19 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaSignOutAlt, FaUserAlt } from "react-icons/fa";
 import { AdminSidebarLinks } from "../../constants/constants";
 import { useUser } from "../../context/UserContext";
 
 const Sidebar = () => {
-  const userData = useUser();
+  const { user, handleLogout } = useUser();
   const pathname = window.location.pathname;
-  console.log(userData);
-
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
 
   return (
     <div className="h-screen fixed w-64 bg-gray-900 text-white flex flex-col">
@@ -22,7 +14,7 @@ const Sidebar = () => {
           <FaUserAlt className="w-8 h-8" />
         </div>
         <h2 className="text-center text-xl font-bold">
-          {userData.firstName + " " + userData.lastName}
+          {user?.firstName && user?.firstName + " " + user?.lastName}
         </h2>
       </div>
 

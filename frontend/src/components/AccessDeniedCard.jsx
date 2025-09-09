@@ -1,4 +1,7 @@
-const AccessDeniedCard = ({ message = "You don’t have permission to view this page.", onBack }) => {
+const AccessDeniedCard = ({
+  message = "You don’t have permission to view this page.",
+  onBack,
+}) => {
   return (
     <div className="flex items-center justify-center h-screen bg-red-100">
       <div className="bg-white shadow-lg rounded-2xl p-8 text-center max-w-md">

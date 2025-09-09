@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../api/axiosConfig";
+import { ImSpinner2 } from "react-icons/im";
 
 const Login = () => {
   const navigator = useNavigate();
@@ -9,6 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -20,19 +22,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const res = await axiosConfig.post("/api/users/login", loginData);
       
       if (res.status === 200) {
         localStorage.setItem("token", res.data.token);
-        if (res.data.user.role === "admin") {
-          navigator("/admin");
-        } else {
-          navigator("/user");
-        }
-        window.location.reload();
+        setTimeout(() => {
+          navigator("/" + JSON.parse(atob(res.data.token.split(".")[1])).role);
+          window.location.reload();
+          setLoading(false);
+        }, 3000);
       }
     } catch (error) {
       console.log("error while logging: ", error);
+      setLoading(false);
     }
   };
 
@@ -71,9 +74,11 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+            className={`w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={loading}
           >
-            Login
+            <ImSpinner2 className={loading ? "inline-block mr-2 animate-spin" : "hidden"} />
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
