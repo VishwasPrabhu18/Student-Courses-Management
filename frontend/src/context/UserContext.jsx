@@ -5,26 +5,30 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const res = await axiosConfig.get("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          setUser({status: 401, message: "Unauthorized"});
-          return;
-        }
         setUser(res.data);
       } catch (err) {
-        console.error("Error fetching user", err);
-        setUser({status: 401, message: "Unauthorized"});
+        if (err.response?.status === 401) {
+          setError({ status: 401, message: "Unauthorized" });
+        } else {
+          setError({ status: 500, message: "Server error" });
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -39,7 +43,11 @@ export const UserProvider = ({ children }) => {
     setUser(null);
   };
 
-  return <UserContext.Provider value={{ user, handleLogout }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, error, loading, handleLogout }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUser = () => useContext(UserContext);

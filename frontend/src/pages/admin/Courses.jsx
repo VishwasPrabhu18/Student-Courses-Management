@@ -1,3 +1,5 @@
+import { useState } from "react";
+import CourseModal from "../../components/CourseModal";
 import AdminLayout from "./AdminLayout";
 
 const Courses = () => {
@@ -7,9 +9,24 @@ const Courses = () => {
     { id: 3, name: "Data Structures in Java", students: 27 },
   ];
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = (data) => {
+    console.log("Course Data Submitted:", data);
+    setIsOpen(false);
+  };
+
   return (
     <AdminLayout>
-      <h1 className="text-3xl font-bold mb-6">Courses</h1>
+      <h1 className="text-3xl font-bold mb-6 mt-16">Courses</h1>
+      <div className="mt-10 mb-4 flex justify-end">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          onClick={() => setIsOpen(true)}
+        >
+          Create Course
+        </button>
+      </div>
       <div className="bg-white p-6 rounded-lg shadow-md">
         <table className="w-full border-collapse">
           <thead>
@@ -30,8 +47,9 @@ const Courses = () => {
           </tbody>
         </table>
       </div>
+      <CourseModal isOpen={isOpen} onClose={() => setIsOpen(false)} onSubmit={handleSubmit} />
     </AdminLayout>
   );
-}
+};
 
 export default Courses;

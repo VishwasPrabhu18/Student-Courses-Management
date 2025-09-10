@@ -4,29 +4,38 @@ import Sidebar from "./Sidebar";
 import { useUser } from "../../context/UserContext";
 
 const AdminLayout = ({ children }) => {
-  const userData = useUser();
+  const { error, loading } = useUser();
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
   const isAdmin =
     token && JSON.parse(atob(token.split(".")[1])).role === "admin";
-
-  const navigate = useNavigate();
 
   const handleAccessDenied = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  if (userData?.status === 401) {
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+
+  if (error?.status === 401) {
     return (
       <AccessDeniedCard
         onBack={handleAccessDenied}
-        message="You are not authorized to access this page."
+        message="Session expired. Please log in again."
       />
     );
   }
 
   if (!isAdmin) {
-    return <AccessDeniedCard onBack={() => navigate("/")} />;
+    return (
+      <AccessDeniedCard
+        onBack={() => navigate("/")}
+        message="You are not authorized to access this page."
+      />
+    );
   }
 
   return (

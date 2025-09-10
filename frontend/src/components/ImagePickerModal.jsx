@@ -1,37 +1,38 @@
-import { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import axiosConfig from "../api/axiosConfig";
 
 const ImagePickerModal = ({ isOpen, onClose, onSelect }) => {
   const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch free images (Unsplash API demo, no API key required for "source.unsplash.com")
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const fetchImages = async () => {
-      setLoading(true);
-      try {
-        const urls = Array.from({ length: 15 }, (_, i) =>
-          `https://source.unsplash.com/random/400x200?sig=${i}&education`
-        );
-        setImages(urls);
-      } catch (err) {
-        console.error("Error fetching images", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchImages();
-  }, [isOpen]);
+  const fetchImages = async () => {
+    setLoading(true);
+    try {
+      const encodedTerm = encodeURIComponent(searchTerm.toLowerCase());
+      const response = await axiosConfig.get(
+        `/api/images/thumbnails?q=${encodedTerm}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      const data = response.data;
+      setImages(data);
+    } catch (err) {
+      console.error("Error fetching images", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -45,9 +46,35 @@ const ImagePickerModal = ({ isOpen, onClose, onSelect }) => {
             {/* Header */}
             <div className="flex justify-between items-center border-b pb-3 mb-4">
               <h2 className="text-xl font-semibold">Choose a Thumbnail</h2>
-              <button onClick={onClose} className="text-gray-600 hover:text-gray-900">
+              <button
+                onClick={onClose}
+                className="text-gray-600 hover:text-gray-900"
+              >
                 <X className="w-6 h-6" />
               </button>
+            </div>
+
+            <div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  fetchImages();
+                }}
+                className="mb-4 flex"
+              >
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-500 w-full"
+                />
+                <button
+                  type="submit"
+                  className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Search
+                </button>
+              </form>
             </div>
 
             {loading ? (

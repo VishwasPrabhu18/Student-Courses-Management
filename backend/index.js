@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRouter from "./routes/users.js";
+import imageRouter from "./routes/image.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors({
 }));
 
 app.use("/api/users", userRouter);
+app.use("/api/images", imageRouter);
 
 const PORT = process.env.PORT || 8080;
 const MONGODB_URL = process.env.MONGODB_URL;
