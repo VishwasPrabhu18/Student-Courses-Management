@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axiosConfig from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 const UserContext = createContext();
 
@@ -38,6 +39,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const handleLogout = () => {
+    toast("Logged out successfully", { type: "success" });
     window.location.href = "/login";
     localStorage.removeItem("token");
     setUser(null);

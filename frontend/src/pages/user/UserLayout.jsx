@@ -15,7 +15,9 @@ const UserLayout = ({ children }) => {
   return (
     <div className="flex">
       <UserSidebar />
-      <main className="flex-1 p-6 bg-gray-100 min-h-screen">{children}</main>
+      <main className="flex-1 p-6 bg-gray-100 min-h-screen ml-64 mt-16">
+        {children}
+      </main>
     </div>
   );
 };

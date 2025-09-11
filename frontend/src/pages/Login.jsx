@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../api/axiosConfig";
 import { ImSpinner2 } from "react-icons/im";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigator = useNavigate();
@@ -27,6 +28,7 @@ const Login = () => {
       
       if (res.status === 200) {
         localStorage.setItem("token", res.data.token);
+        toast("Logged in successfully", { type: "success" });
         setTimeout(() => {
           navigator("/" + JSON.parse(atob(res.data.token.split(".")[1])).role);
           window.location.reload();

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import AccessDeniedCard from "../../components/AccessDeniedCard";
 import Sidebar from "./Sidebar";
 import { useUser } from "../../context/UserContext";
+import CustomeLoader from "../../components/CustomeLoader";
 
 const AdminLayout = ({ children }) => {
   const { error, loading } = useUser();
@@ -17,7 +18,7 @@ const AdminLayout = ({ children }) => {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return <CustomeLoader />
   }
 
   if (error?.status === 401) {
@@ -41,7 +42,7 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="flex">
       <Sidebar />
-      <main className="flex-1 p-6 bg-gray-100 min-h-screen ml-64">
+      <main className="flex-1 p-6 bg-gray-100 min-h-screen ml-64 mt-16">
         {children}
       </main>
     </div>
