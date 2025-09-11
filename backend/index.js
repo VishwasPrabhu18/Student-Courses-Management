@@ -5,12 +5,13 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRouter from "./routes/users.js";
 import imageRouter from "./routes/image.js";
+import adminRouter from "./routes/admin.js";
+import courseRouter from "./routes/courses.js";
 
 dotenv.config();
 
 const app = express();
 
-//app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
@@ -19,7 +20,9 @@ app.use(cors({
 }));
 
 app.use("/api/users", userRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/images", imageRouter);
+app.use("/api/courses", courseRouter);
 
 const PORT = process.env.PORT || 8080;
 const MONGODB_URL = process.env.MONGODB_URL;

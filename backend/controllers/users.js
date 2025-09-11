@@ -2,15 +2,6 @@ import UserModel from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export const getUsers = async (req, res) => {
-  try {
-    const userData = await UserModel.find();
-    res.status(200).json(userData);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-
 export const createUser = async (req, res) => {
   const reqData = req.body;
   const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS);
@@ -21,7 +12,7 @@ export const createUser = async (req, res) => {
     );
     const newUser = new UserModel({ ...reqData, password: hashedPassword });
     const userData = await newUser.save();
-    res.status(201).json(userData);
+    res.status(201).json(userData.replaceOne("-password", ""));
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -56,16 +47,6 @@ export const loginUser = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
-  }
-};
-
-export const deleteUser = async (req, res) => {
-  const { id } = req.params;
-  try {
-    await UserModel.findByIdAndDelete(id);
-    res.status(204).send();
-  } catch (error) {
-    res.status(404).json({ message: error.message });
   }
 };
 
