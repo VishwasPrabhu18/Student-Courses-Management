@@ -3,9 +3,10 @@ import AccessDeniedCard from "../../components/AccessDeniedCard";
 import Sidebar from "./Sidebar";
 import { useUser } from "../../context/UserContext";
 import CustomeLoader from "../../components/CustomeLoader";
+import { useEffect } from "react";
 
 const AdminLayout = ({ children }) => {
-  const { error, loading } = useUser();
+  const { error, loading, fetchUser } = useUser();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -17,8 +18,16 @@ const AdminLayout = ({ children }) => {
     navigate("/login");
   };
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    } else {
+      fetchUser();
+    }
+  }, []);
+
   if (loading) {
-    return <CustomeLoader />
+    return <CustomeLoader />;
   }
 
   if (error?.status === 401) {

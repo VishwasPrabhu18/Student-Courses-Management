@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import ImagePickerModal from "./ImagePickerModal";
+import { FaTrash } from "react-icons/fa";
+import IconSelect from "./IconSelect";
+import CustomSelect from "./CustomSelect";
+import CustomInput from "./CustomInput";
 
 const FormField = ({ label, children }) => (
   <div className="flex flex-col gap-1">
@@ -20,6 +24,7 @@ const CourseModal = ({
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    icon: "",
     category: "",
     price: "",
     duration: "",
@@ -29,18 +34,77 @@ const CourseModal = ({
     thumbnail: "",
     instructor: "",
     level: "",
+    whatYouLearn: [""],
+    requirements: [""],
+    highlights: [""],
+    courseContent: [{ section: "", lectures: [{ title: "", duration: "" }] }],
   });
+
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   useEffect(() => {
-    if (initialData) {
-      setFormData({ ...initialData });
-    }
+    if (initialData) setFormData({ ...initialData });
   }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleArrayChange = (field, index, value) => {
+    const updated = [...formData[field]];
+    updated[index] = value;
+    setFormData((prev) => ({ ...prev, [field]: updated }));
+  };
+
+  const addArrayItem = (field) => {
+    setFormData((prev) => ({ ...prev, [field]: [...prev[field], ""] }));
+  };
+
+  const removeArrayItem = (field, index) => {
+    const updated = formData[field].filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, [field]: updated }));
+  };
+
+  const handleSectionChange = (index, value) => {
+    const updated = [...formData.courseContent];
+    updated[index].section = value;
+    setFormData((prev) => ({ ...prev, courseContent: updated }));
+  };
+
+  const handleLectureChange = (sectionIndex, lectureIndex, field, value) => {
+    const updated = [...formData.courseContent];
+    updated[sectionIndex].lectures[lectureIndex][field] = value;
+    setFormData((prev) => ({ ...prev, courseContent: updated }));
+  };
+
+  const addSection = () => {
+    setFormData((prev) => ({
+      ...prev,
+      courseContent: [
+        ...prev.courseContent,
+        { section: "", lectures: [{ title: "", duration: "" }] },
+      ],
+    }));
+  };
+
+  const removeSection = (index) => {
+    const updated = formData.courseContent.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, courseContent: updated }));
+  };
+
+  const addLecture = (sectionIndex) => {
+    const updated = [...formData.courseContent];
+    updated[sectionIndex].lectures.push({ title: "", duration: "" });
+    setFormData((prev) => ({ ...prev, courseContent: updated }));
+  };
+
+  const removeLecture = (sectionIndex, lectureIndex) => {
+    const updated = [...formData.courseContent];
+    updated[sectionIndex].lectures = updated[sectionIndex].lectures.filter(
+      (_, i) => i !== lectureIndex
+    );
+    setFormData((prev) => ({ ...prev, courseContent: updated }));
   };
 
   const handleToggle = () => {
@@ -56,6 +120,7 @@ const CourseModal = ({
     setFormData({
       title: "",
       description: "",
+      icon: "",
       category: "",
       price: "",
       duration: "",
@@ -65,6 +130,10 @@ const CourseModal = ({
       thumbnail: "",
       instructor: "",
       level: "",
+      whatYouLearn: [""],
+      requirements: [""],
+      highlights: [""],
+      courseContent: [{ section: "", lectures: [{ title: "", duration: "" }] }],
     });
     onClose();
   };
@@ -79,7 +148,7 @@ const CourseModal = ({
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-3xl py-6 px-8 relative overflow-y-auto max-h-[90vh]"
+            className="bg-white rounded-2xl shadow-xl w-full max-w-4xl py-6 px-8 relative overflow-y-auto max-h-[90vh]"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -98,156 +167,312 @@ const CourseModal = ({
             </div>
 
             {/* Form */}
-            <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
-              <FormField label="Course Title">
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-3 py-1.5 text-sm"
-                  required
-                />
-              </FormField>
-
-              <FormField label="Description">
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full border rounded-lg px-3 py-1.5 text-sm resize-none"
-                  required
-                />
-              </FormField>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField label="Category">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-1.5 text-sm bg-white"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="web">Web Development</option>
-                    <option value="design">Design</option>
-                    <option value="data">Data Science</option>
-                  </select>
-                </FormField>
-                <FormField label="Price ($)">
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-1.5 text-sm"
-                  />
-                </FormField>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField label="Duration (weeks)">
-                  <input
-                    type="number"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-1.5 text-sm"
-                  />
-                </FormField>
-                <FormField label="Instructor">
-                  <input
-                    type="text"
-                    name="instructor"
-                    value={formData.instructor}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-1.5 text-sm"
-                  />
-                </FormField>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField label="Level">
-                  <select
-                    name="level"
-                    value={formData.level}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-1.5 text-sm bg-white"
-                  >
-                    <option value="">Select Level</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                  </select>
-                </FormField>
-                <FormField label="Dates">
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={formData.startDate}
-                      onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-1.5 text-sm"
-                    />
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={formData.endDate}
-                      onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-1.5 text-sm"
+            <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
+              {/* Basic Info */}
+              <div className="border-b pb-4">
+                <h3 className="text-lg font-semibold mb-3">Basic Info</h3>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div className="col-span-3 md:col-span-2">
+                    <CustomInput
+                      label="Course Title"
+                      value={formData.title}
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, title: value }))
+                      }
                     />
                   </div>
-                </FormField>
-              </div>
-
-              {/* Toggle */}
-              <div className="flex items-center gap-4 mt-4">
-                <span className="text-sm font-medium">
-                  Status:{" "}
-                  <span
-                    className={
-                      formData.isActive ? "text-green-600" : "text-red-600"
+                  <IconSelect
+                    label="Course Icon"
+                    value={formData.icon}
+                    onChange={(icon) =>
+                      setFormData((prev) => ({ ...prev, icon }))
                     }
+                  />
+                </div>
+                <CustomInput
+                  label="Description"
+                  type="textarea"
+                  minNumRows={3}
+                  value={formData.description}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, description: value }))
+                  }
+                />
+              </div>
+
+              {/* Schedule & Instructor */}
+              <div className="border-b pb-4">
+                <h3 className="text-lg font-semibold mb-3">
+                  Schedule & Instructor
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <CustomSelect
+                    label="Category"
+                    options={[
+                      { value: "web-development", label: "Web Development" },
+                      { value: "data-science", label: "Data Science" },
+                      { value: "graphic-design", label: "Graphic Design" },
+                    ]}
+                    value={formData.category}
+                    onChange={(category) =>
+                      setFormData((prev) => ({ ...prev, category }))
+                    }
+                  />
+                  <CustomInput
+                    label="Price ($)"
+                    value={formData.price}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, price: value }))
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <CustomInput
+                    label="Duration (weeks)"
+                    type="number"
+                    value={formData.duration}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, duration: value }))
+                    }
+                  />
+                  <CustomInput
+                    label="Instructor"
+                    value={formData.instructor}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, instructor: value }))
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Level & Dates */}
+              <div className="border-b pb-4">
+                <h3 className="text-lg font-semibold mb-3">Level & Dates</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* <FormField label="Level">
+                    <select
+                      name="level"
+                      value={formData.level}
+                      onChange={handleChange}
+                      className="w-full border rounded-lg px-3 py-1.5 text-sm bg-white"
+                    >
+                      <option value="">Select Level</option>
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </FormField> */}
+                  <CustomSelect
+                    label="Level"
+                    options={[
+                      { value: "beginner", label: "Beginner" },
+                      { value: "intermediate", label: "Intermediate" },
+                      { value: "advanced", label: "Advanced" },
+                    ]}
+                    value={formData.level}
+                    onChange={(level) =>
+                      setFormData((prev) => ({ ...prev, level }))
+                    }
+                  />
+                  <div className="flex items-center gap-3">
+                    <CustomInput
+                      label="Start Date"
+                      type="date"
+                      value={formData.startDate}
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, startDate: value }))
+                      }
+                    />
+                    <CustomInput
+                      label="End Date"
+                      type="date"
+                      value={formData.endDate}
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, endDate: value }))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Dynamic Fields */}
+              {["whatYouLearn", "requirements", "highlights"].map((field) => (
+                <div key={field} className="border-b pb-4">
+                  <h3 className="text-lg font-semibold mb-3">
+                    {field === "whatYouLearn"
+                      ? "What You’ll Learn"
+                      : field === "requirements"
+                      ? "Requirements"
+                      : "Highlights"}
+                  </h3>
+                  {formData[field].map((item, i) => (
+                    <div key={i} className="flex gap-2 mb-2">
+                      <CustomInput
+                        value={item}
+                        onChange={(value) => handleArrayChange(field, i, value)}
+                        className="flex-1"
+                      />
+                      {formData[field].length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeArrayItem(field, i)}
+                          className="p-2 h-fit mt-1 bg-red-500 text-white rounded"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addArrayItem(field)}
+                    className="text-sm text-blue-600"
                   >
-                    {formData.isActive ? "Active" : "Inactive"}
-                  </span>
-                </span>
+                    + Add {field}
+                  </button>
+                </div>
+              ))}
+
+              {/* Course Content */}
+              <div className="border-b pb-4">
+                <h3 className="text-lg font-semibold mb-3">Course Content</h3>
+                {formData.courseContent.map((section, sectionIndex) => (
+                  <div
+                    key={sectionIndex}
+                    className="border rounded-lg p-3 mb-3"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <CustomInput
+                        label={`Section ${sectionIndex + 1} Title`}
+                        value={section.section}
+                        onChange={(value) =>
+                          handleSectionChange(sectionIndex, value)
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeSection(sectionIndex)}
+                        className="ml-2 p-2 mt-6 bg-red-500 text-white rounded"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                    {section.lectures.map((lecture, lectureIndex) => (
+                      <div
+                        key={lectureIndex}
+                        className="grid grid-cols-3 gap-4 mb-2 items-end"
+                      >
+                        <div className="col-span-2">
+                          <CustomInput
+                          label={`Lecture ${lectureIndex + 1} Title`}
+                          value={lecture.title}
+                          onChange={(value) =>
+                            handleLectureChange(
+                              sectionIndex,
+                              lectureIndex,
+                              "title",
+                              value
+                            )
+                          }
+                        />
+                        </div>
+
+                        <div className="flex items-center justify-center gap-2">
+                          <CustomInput
+                            label={`Lecture ${lectureIndex + 1} Duration`}
+                            value={lecture.duration}
+                            placeholder="e.g., 10:30m, 40s, 1hr"
+                            onChange={(value) =>
+                              handleLectureChange(
+                                sectionIndex,
+                                lectureIndex,
+                                "duration",
+                                value
+                              )
+                            }
+                          />
+                          {section.lectures.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeLecture(sectionIndex, lectureIndex)
+                              }
+                              className="p-2 h-fit mt-6 bg-red-500 text-white rounded"
+                            >
+                              <FaTrash />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addLecture(sectionIndex)}
+                      className="text-sm text-blue-600"
+                    >
+                      + Add Lecture
+                    </button>
+                  </div>
+                ))}
                 <button
                   type="button"
-                  onClick={handleToggle}
-                  className={`w-14 h-7 flex items-center rounded-full p-1 transition ${
-                    formData.isActive ? "bg-green-500" : "bg-gray-400"
-                  }`}
+                  onClick={addSection}
+                  className="text-sm text-blue-600"
                 >
-                  <div
-                    className={`bg-white w-5 h-5 rounded-full shadow-md transform transition ${
-                      formData.isActive ? "translate-x-7" : ""
-                    }`}
-                  />
+                  + Add Section
                 </button>
               </div>
 
-              {/* Thumbnail (at bottom, centered full row) */}
-              <div className="flex flex-col items-center gap-3 mt-6">
-                {formData.thumbnail ? (
-                  <div className="w-full max-w-lg aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                    <img
-                      src={formData.thumbnail}
-                      alt="thumbnail"
-                      className="object-cover w-full h-full"
+              {/* Status & Thumbnail */}
+              <div className="pb-4">
+                <h3 className="text-lg font-semibold mb-3">
+                  Status & Thumbnail
+                </h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="text-sm font-medium">
+                    Status:{" "}
+                    <span
+                      className={
+                        formData.isActive ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      {formData.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleToggle}
+                    className={`w-14 h-7 flex items-center rounded-full p-1 transition ${
+                      formData.isActive ? "bg-green-500" : "bg-gray-400"
+                    }`}
+                  >
+                    <div
+                      className={`bg-white w-5 h-5 rounded-full shadow-md transform transition ${
+                        formData.isActive ? "translate-x-7" : ""
+                      }`}
                     />
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-sm">No image selected</p>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setImagePickerOpen(true)}
-                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Select Thumbnail
-                </button>
+                  </button>
+                </div>
+                <div className="flex flex-col items-center gap-3">
+                  {formData.thumbnail ? (
+                    <div className="w-full max-w-lg aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                      <img
+                        src={formData.thumbnail}
+                        alt="thumbnail"
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No image selected</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setImagePickerOpen(true)}
+                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Select Thumbnail
+                  </button>
+                </div>
               </div>
 
               {/* Actions */}

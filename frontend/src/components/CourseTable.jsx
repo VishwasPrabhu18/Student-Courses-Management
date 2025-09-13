@@ -1,0 +1,121 @@
+import { useState } from "react";
+import { formatDate, shortenText } from "../constants/helperMethods";
+import { useNavigate } from "react-router-dom";
+import { FiEye, FiTrash2 } from "react-icons/fi";
+import ConfirmationModal from "./ConfirmationModal";
+
+const CourseTable = ({ courseData }) => {
+  const navigate = useNavigate();
+   const [deleteOpen, setDeleteOpen] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    icon: null,
+    bgClassName: "",
+    courseId: "",
+    iconBg: "",
+    cardBg: "",
+    btnBg: "",
+  });
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className="bg-gradient-to-r from-blue-100 to-blue-200 text-left text-gray-700 uppercase text-xs tracking-wider">
+            <th className="p-3 rounded-tl-xl">#</th>
+            <th className="p-3">Course Name</th>
+            <th className="p-3">Description</th>
+            <th className="p-3">Start Date</th>
+            <th className="p-3">End Date</th>
+            <th className="p-3">Status</th>
+            <th className="p-3 rounded-tr-xl">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {courseData.length > 0 ? (
+            courseData.map((c, idx) => {
+              const encodedId = btoa(c._id);
+              return (
+                <tr
+                  key={c.title}
+                  className={`border-b transition duration-150 ${
+                    idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  } hover:bg-gray-100`}
+                >
+                  <td className="p-3 font-medium">{idx + 1}</td>
+                  <td className="p-3 font-semibold">
+                    {shortenText(c.title, 25)}
+                  </td>
+                  <td className="p-3 text-gray-600 truncate max-w-xs">
+                    {shortenText(c.description, 30)}
+                  </td>
+                  <td className="p-3">{formatDate(c.startDate)}</td>
+                  <td className="p-3">{formatDate(c.endDate)}</td>
+                  <td className="p-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        c.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {c.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td className="p-3 flex gap-3">
+                    <button
+                      onClick={() => navigate(`/admin/courses/${encodedId}`)}
+                      className="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
+                      <FiEye size={18} />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setDeleteOpen({
+                          isOpen: true,
+                          title: "Confirm Deletion",
+                          message:
+                            "Are you sure you want to delete this course?",
+                          icon: <FiTrash2 size={18} />,
+                          bgClassName: "bg-red-100 text-red-700",
+                          iconBg: "bg-red-200 text-red-800",
+                          cardBg: "bg-red-50",
+                          btnBg: "bg-red-600 hover:bg-red-700 text-white",
+                          courseId: c.id,
+                        })
+                      }
+                      className="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <FiTrash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="7" className="text-center text-gray-500 py-6">
+                No courses available.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <ConfirmationModal
+        isOpen={deleteOpen.isOpen}
+        title={deleteOpen.title}
+        description={deleteOpen.message}
+        onOk={() => {}}
+        onCancel={() => setDeleteOpen({ isOpen: false })}
+        icon={deleteOpen.icon}
+        bgClassName={deleteOpen.bgClassName}
+        iconBg={deleteOpen.iconBg}
+        cardBg={deleteOpen.cardBg}
+        btnBg={deleteOpen.btnBg}
+      />
+    </div>
+  );
+};
+
+export default CourseTable;

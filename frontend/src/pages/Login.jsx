@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../api/axiosConfig";
 import { ImSpinner2 } from "react-icons/im";
@@ -25,7 +25,7 @@ const Login = () => {
     try {
       setLoading(true);
       const res = await axiosConfig.post("/api/users/login", loginData);
-      
+
       if (res.status === 200) {
         localStorage.setItem("token", res.data.token);
         toast("Logged in successfully", { type: "success" });
@@ -33,6 +33,7 @@ const Login = () => {
           navigator("/" + JSON.parse(atob(res.data.token.split(".")[1])).role);
           window.location.reload();
           setLoading(false);
+
         }, 3000);
       }
     } catch (error) {
@@ -76,10 +77,14 @@ const Login = () => {
           />
           <button
             type="submit"
-            className={`w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={loading}
           >
-            <ImSpinner2 className={loading ? "inline-block mr-2 animate-spin" : "hidden"} />
+            <ImSpinner2
+              className={loading ? "inline-block mr-2 animate-spin" : "hidden"}
+            />
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>

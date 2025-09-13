@@ -9,34 +9,28 @@ export const UserProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const res = await axiosConfig.get("/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(res.data);
-      } catch (err) {
-        if (err.response?.status === 401) {
-          setError({ status: 401, message: "Unauthorized" });
-        } else {
-          setError({ status: 500, message: "Server error" });
-        }
-      } finally {
-        setLoading(false);
+    try {
+      const res = await axiosConfig.get("/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError({ status: 401, message: "Unauthorized" });
+      } else {
+        setError({ status: 500, message: "Server error" });
       }
-    };
-
-    setTimeout(() => {
-      fetchUser();
-    }, 1000);
-  }, []);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     toast("Logged out successfully", { type: "success" });
@@ -46,7 +40,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, error, loading, handleLogout }}>
+    <UserContext.Provider value={{ user, error, loading, handleLogout, fetchUser }}>
       {children}
     </UserContext.Provider>
   );

@@ -10,7 +10,10 @@ const courseSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
-      trim: true,
+    },
+    icon: {
+      type: String,
+      default: "",
     },
     category: {
       type: String,
@@ -21,8 +24,8 @@ const courseSchema = new mongoose.Schema(
       default: 0,
     },
     duration: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "",
     },
     startDate: {
       type: Date,
@@ -44,12 +47,39 @@ const courseSchema = new mongoose.Schema(
     },
     level: {
       type: String,
-      default: "",
+      default: "Beginner",
     },
+
+    whatYouLearn: [
+      {
+        type: String,
+      },
+    ],
+    courseContent: [
+      {
+        section: { type: String, default: "" },
+        lectures: [
+          {
+            title: { type: String, default: "" },
+            duration: { type: String, default: "" },
+          },
+        ],
+      },
+    ],
+    requirements: [
+      {
+        type: String,
+      },
+    ],
+    highlights: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
 
-const CoursesModel = mongoose.model("Courses", courseSchema);
+const Course = mongoose.model("Course", courseSchema);
 
-export default CoursesModel;
+export default Course;
