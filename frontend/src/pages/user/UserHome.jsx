@@ -1,44 +1,115 @@
-import React from "react";
 import UserLayout from "./UserLayout";
-import { FaBook, FaCheckCircle, FaHourglassHalf, FaCertificate } from "react-icons/fa";
+import {
+  FaBook,
+  FaCheckCircle,
+  FaHourglassHalf,
+  FaCertificate,
+  FaRegClock,
+} from "react-icons/fa";
+import { useUser } from "../../context/UserContext";
+import { useEffect, useState } from "react";
+import axiosConfig from "../../api/axiosConfig";
+import UserDashboardCard from "../../components/UserDashboardCard";
 
 const UserHome = () => {
-  const user = {
-    firstName: "Alice",
-    lastName: "Johnson",
-    avatar: "https://i.pravatar.cc/150?img=5",
-  };
-
-  const stats = [
-    { label: "Enrolled Courses", value: 3, icon: <FaBook className="text-blue-600 text-3xl" /> },
-    { label: "Completed", value: 1, icon: <FaCheckCircle className="text-green-600 text-3xl" /> },
-    { label: "In Progress", value: 2, icon: <FaHourglassHalf className="text-yellow-500 text-3xl" /> },
-    { label: "Certificates", value: 2, icon: <FaCertificate className="text-purple-600 text-3xl" /> },
-  ];
+  const { user } = useUser();
+  const [stats, setStats] = useState({
+    enrolledCount: 0,
+    progressCount: 0,
+    completedCount: 0,
+    overDueCount: 0,
+    certificateCount: 0,
+  });
+  const [tableData, setTableData] = useState([]);
 
   const recentCourses = [
-    { id: 1, name: "React Basics", status: "In Progress", start: "2025-01-10", end: "2025-03-10" },
-    { id: 2, name: "Node.js Fundamentals", status: "Completed", start: "2025-02-01", end: "2025-04-01" },
-    { id: 3, name: "Data Structures in Java", status: "In Progress", start: "2025-01-20", end: "2025-03-20" },
+    {
+      id: 1,
+      name: "React Basics",
+      status: "In Progress",
+      start: "2025-01-10",
+      end: "2025-03-10",
+    },
+    {
+      id: 2,
+      name: "Node.js Fundamentals",
+      status: "Completed",
+      start: "2025-02-01",
+      end: "2025-04-01",
+    },
+    {
+      id: 3,
+      name: "Data Structures in Java",
+      status: "In Progress",
+      start: "2025-01-20",
+      end: "2025-03-20",
+    },
   ];
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axiosConfig.get("/api/users/dashboard", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.status === 200) {
+          const data = res.data;
+          setStats({
+            enrolledCount: data.enrolledCount,
+            progressCount: data.progressCount,
+            completedCount: data.completedCount,
+            certificateCount: data.certificateCount,
+            overDueCount: data.overDueCount,
+          });
+          setTableData(data.courseData);
+        }
+      } catch (error) {
+        console.log("Dashboard data fetch error: " + error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   return (
     <UserLayout>
       <div className="p-6">
         {/* Dashboard Header */}
-        <h1 className="text-3xl font-bold mb-6">Welcome, {user.firstName} 👋</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          Welcome, {user?.firstName} 👋
+        </h1>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((s, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl shadow-lg flex items-center gap-4">
-              <div className="p-4 bg-gray-100 rounded-full">{s.icon}</div>
-              <div>
-                <p className="text-gray-600">{s.label}</p>
-                <h2 className="text-2xl font-bold">{s.value}</h2>
-              </div>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <UserDashboardCard
+            icon={<FaBook className="text-blue-600 text-3xl" />}
+            label="Enrolled Courses"
+            value={stats.enrolledCount}
+          />
+          <UserDashboardCard
+            icon={<FaCheckCircle className="text-green-600 text-3xl" />}
+            label="Completed Courses"
+            value={stats.completedCount}
+          />
+          <UserDashboardCard
+            icon={<FaHourglassHalf className="text-yellow-500 text-3xl" />}
+            label="In Progress Courses"
+            value={stats.progressCount}
+          />
+          <UserDashboardCard
+            icon={<FaRegClock className="text-purple-600 text-3xl" />}
+            label="Overdue Courses"
+            value={stats.overDueCount}
+          />
+          <UserDashboardCard
+            icon={<FaCertificate className="text-purple-600 text-3xl" />}
+            label="Certificates Earned"
+            value={stats.certificateCount}
+          />
         </div>
 
         {/* Recent Courses Table */}
@@ -74,22 +145,7 @@ const UserHome = () => {
               ))}
             </tbody>
           </table>
-        </div>
-
-        {/* Search & Explore */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Explore New Courses</h2>
-          <div className="flex gap-3">
-            <input
-              type="text"
-              placeholder="Search for new courses..."
-              className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            <button className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-              Browse
-            </button>
-          </div>
-        </div>
+        </div>       
       </div>
     </UserLayout>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserLayout from "./UserLayout";
+import CustomInput from "../../components/CustomInput";
 
 const UserCourses = () => {
   const [search, setSearch] = useState("");
@@ -18,35 +19,19 @@ const UserCourses = () => {
 
   return (
     <UserLayout>
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 mt-12">
-        <h1 className="text-2xl font-bold mb-4">Available Courses</h1>
-
-        {/* Search */}
-        <input
-          type="text"
-          placeholder="Search courses..."
-          className="w-full border p-2 rounded mb-4"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* Course List */}
-        <ul className="space-y-3">
-          {filteredCourses.map((course) => (
-            <li
-              key={course.id}
-              className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50"
-            >
-              <span>{course.name}</span>
-              <button
-                onClick={() => navigate(`/user/courses/${course.id}`)}  // ✅ navigate here
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Enroll
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="bg-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl font-semibold mb-4">Explore New Courses</h2>
+        <div className="flex gap-3">
+          <CustomInput
+            type="text"
+            placeholder="Search for new courses..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button className="px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Browse
+          </button>
+        </div>
       </div>
     </UserLayout>
   );

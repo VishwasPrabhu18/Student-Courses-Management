@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import axiosConfig from "../api/axiosConfig";
 import { toast } from "react-toastify";
 
@@ -22,6 +22,8 @@ export const UserProvider = ({ children }) => {
       });
       setUser(res.data);
     } catch (err) {
+      console.log(err);
+      
       if (err.response?.status === 401) {
         setError({ status: 401, message: "Unauthorized" });
       } else {

@@ -1,6 +1,7 @@
 import UserModel from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import EnrollmentModal from "../models/enrollment.js";
 
 export const createUser = async (req, res) => {
   const reqData = req.body;
@@ -22,7 +23,7 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await UserModel.findOne({ email }); 
+    const user = await UserModel.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -77,6 +78,48 @@ export const getUserByToken = async (req, res) => {
     const user = await UserModel.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getUserDashboardData = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userCourseData = await EnrollmentModal.find({ userId });
+
+    if (!userCourseData) {
+      return res
+        .status(401)
+        .json({ message: "Course Data not found for this user" });
+    }
+    const enrolledCount = userCourseData.filter(
+      (course) => course.status === "enrolled"
+    ).length;
+    const progressCount = userCourseData.filter(
+      (course) => course.status === "progress"
+    ).length;
+    const completedCount = userCourseData.filter(
+      (course) => course.status === "completed"
+    ).length;
+    const certificateCount = userCourseData.filter(
+      (course) => course.certificateIssued === true
+    ).length;
+    const overDueCount = userCourseData.filter((course) => {
+      if (course.endDate) {
+        return new Date(course.endDate) < new Date() && course.status !== "completed";
+      }
+      return false;
+    }).length;
+
+    return res.status(200).json({
+      enrolledCount,
+      progressCount,
+      completedCount,
+      certificateCount,
+      overDueCount,
+      courseData: userCourseData,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
