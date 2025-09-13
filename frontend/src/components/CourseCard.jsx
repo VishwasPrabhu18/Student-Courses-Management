@@ -35,7 +35,7 @@ const CourseCard = ({ cardCourseData }) => {
             {/* Course Info */}
             <div className="flex-1 w-full">
               <p className="text-gray-600 mt-2 text-sm">
-                {course.students} Course Fees • ₹{course.price}
+                {course.students} Course Fees • ₹{course.offeredPrice === 0 ? course.originalPrice : course.offeredPrice}{" "}
               </p>
 
               <p className="text-gray-400 mt-1 text-xs">

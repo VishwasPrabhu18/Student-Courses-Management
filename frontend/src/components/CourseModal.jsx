@@ -6,6 +6,7 @@ import { FaTrash } from "react-icons/fa";
 import IconSelect from "./IconSelect";
 import CustomSelect from "./CustomSelect";
 import CustomInput from "./CustomInput";
+import { formatDateForInput } from "../constants/helperMethods";
 
 const CourseModal = ({
   isOpen,
@@ -38,12 +39,7 @@ const CourseModal = ({
 
   useEffect(() => {
     if (initialData) setFormData({ ...initialData });
-  }, [initialData]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [initialData, isOpen]);
 
   const handleArrayChange = (field, index, value) => {
     const updated = [...formData[field]];
@@ -108,6 +104,7 @@ const CourseModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
+    console.log(formData);
   };
 
   const handleClose = () => {
@@ -275,7 +272,7 @@ const CourseModal = ({
                     <CustomInput
                       label="Start Date"
                       type="date"
-                      value={formData.startDate}
+                      value={formatDateForInput(formData.startDate)}
                       onChange={(value) =>
                         setFormData((prev) => ({ ...prev, startDate: value }))
                       }
@@ -283,7 +280,7 @@ const CourseModal = ({
                     <CustomInput
                       label="End Date"
                       type="date"
-                      value={formData.endDate}
+                      value={formatDateForInput(formData.endDate)}
                       onChange={(value) =>
                         setFormData((prev) => ({ ...prev, endDate: value }))
                       }

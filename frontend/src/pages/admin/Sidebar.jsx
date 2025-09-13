@@ -24,6 +24,7 @@ const Sidebar = () => {
           const href = link.path;
 
           const isActive = pathname === href;
+          
           return (
             <Link
               key={link.name}

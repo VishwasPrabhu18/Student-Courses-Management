@@ -16,6 +16,7 @@ import Courses from "./pages/admin/Courses";
 import CourseDetails from "./pages/admin/CourseDetails";
 import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdminCourseDetails from "./pages/admin/AdminCourseDetails";
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UsersList />} />
         <Route path="/admin/courses" element={<Courses />} />
-        <Route path="/admin/courses/:id" element={<CourseDetails />} />
+        <Route path="/admin/courses/:id" element={<AdminCourseDetails />} />
 
         {/* User Routes */}
         <Route path="/user" element={<UserHome />} />

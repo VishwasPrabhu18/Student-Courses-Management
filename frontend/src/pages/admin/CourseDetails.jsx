@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FiCheckCircle, FiPlayCircle, FiChevronDown } from "react-icons/fi";
 import AdminLayout from "./AdminLayout";
 import axiosConfig from "../../api/axiosConfig";
+import LoadingDots from "../../components/LoadingDots";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -16,10 +17,11 @@ const CourseDetails = () => {
   useEffect(() => {
     const getCourseById = async () => {
       setLoading(true);
+      const token = localStorage.getItem("token");
       try {
         const res = await axiosConfig.get(`/api/courses/${decodedId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -33,15 +35,20 @@ const CourseDetails = () => {
         setLoading(false);
       }
     };
-    if (decodedId) {
-      getCourseById();
-    }
+    getCourseById();
   }, []);
+  
+  if (loading) {
+    return (
+      <AdminLayout>
+        <LoadingDots />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
       <div className="bg-gray-50 min-h-screen">
-        {/* ✅ Title always visible below navbar */}
         <div className="px-6 py-6 border-b bg-white shadow-sm">
           <h1 className="text-2xl font-bold text-gray-900">
             {courseData.title}
@@ -56,7 +63,7 @@ const CourseDetails = () => {
             <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
               <h2 className="text-2xl font-semibold mb-4">What you'll learn</h2>
               <div className="flex flex-col gap-3">
-                {courseData.whatYouLearn.map((item, i) => (
+                {courseData?.whatYouLearn?.map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <FiCheckCircle className="text-green-600" />
                     <span>{item}</span>
@@ -66,17 +73,17 @@ const CourseDetails = () => {
             </section>
 
             {/* Course Content */}
-            {/* <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
+            <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
               <h2 className="text-2xl font-semibold mb-4">Course content</h2>
-              {course.curriculum.map((section, i) => (
+              {courseData?.courseContent?.map((section, i) => (
                 <div key={i} className="mb-4 border rounded-lg">
                   <button
-                    className="flex justify-between items-center w-full px-4 py-3 font-semibold text-left hover:bg-gray-50"
+                    className="flex justify-between items-center w-full px-4 py-3 font-semibold text-left hover:bg-gray-50 hover:rounded-lg"
                     onClick={() =>
                       setExpandedSection(expandedSection === i ? null : i)
                     }
                   >
-                    {section.title}
+                    {section.section}
                     <FiChevronDown
                       className={`transform transition-transform ${
                         expandedSection === i ? "rotate-180" : ""
@@ -100,17 +107,17 @@ const CourseDetails = () => {
                   )}
                 </div>
               ))}
-            </section> */}
+            </section>
 
             {/* Requirements */}
-            {/* <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
+            <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
               <h2 className="text-2xl font-semibold mb-4">Requirements</h2>
               <ul className="list-disc list-inside text-gray-700">
-                {course.requirements.map((req, i) => (
+                {courseData?.requirements?.map((req, i) => (
                   <li key={i}>{req}</li>
                 ))}
               </ul>
-            </section> */}
+            </section>
 
             {/* Description */}
             <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
@@ -120,7 +127,7 @@ const CourseDetails = () => {
           </div>
 
           {/* RIGHT SIDE - COURSE CARD */}
-          <div className="w-full lg:w-96 bg-white shadow-xl rounded-2xl p-6 h-fit sticky top-24">
+          <div className="w-full lg:w-96 bg-white shadow-xl rounded-2xl p-6 h-fit sticky top-24 mb-6">
             <div className="relative mb-4">
               <img
                 src={
@@ -138,12 +145,16 @@ const CourseDetails = () => {
             <div className="mb-4 flex items-center gap-4">
               <span className="text-lg font-semibold">Price:</span>
               <p className="text-3xl font-bold mb-2">
-                {courseData.price}{" "}
-                {/* {courseData.originalPrice !== 0 && (
-                  <span className="line-through text-gray-500 text-lg">
-                    {courseData?.originalPrice}
-                  </span>
-                )} */}
+                {courseData.offeredPrice === 0 ? (
+                  `₹${courseData.originalPrice}`
+                ) : (
+                  <>
+                    ₹{courseData.offeredPrice}{" "}
+                    <span className="text-gray-500 text-lg line-through ml-2">
+                      ₹{courseData.originalPrice}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
 
@@ -155,11 +166,13 @@ const CourseDetails = () => {
             </button>
 
             <h3 className="font-semibold mb-2">This course includes:</h3>
-            {/* <ul className="text-gray-700 list-disc list-inside">
-              {course.includes.map((inc, i) => (
-                <li key={i}>{inc}</li>
+            <ul className="text-gray-700 list-disc list-outside pl-6">
+              {courseData?.highlights?.map((inc, i) => (
+                <li key={i} className="leading-relaxed">
+                  {inc}
+                </li>
               ))}
-            </ul> */}
+            </ul>
           </div>
         </div>
       </div>
