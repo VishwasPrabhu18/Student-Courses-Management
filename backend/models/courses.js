@@ -19,7 +19,11 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    price: {
+    originalPrice: {
+      type: Number,
+      default: 0,
+    },
+    offeredPrice: {
       type: Number,
       default: 0,
     },

@@ -7,13 +7,6 @@ import IconSelect from "./IconSelect";
 import CustomSelect from "./CustomSelect";
 import CustomInput from "./CustomInput";
 
-const FormField = ({ label, children }) => (
-  <div className="flex flex-col gap-1">
-    <label className="text-sm font-medium text-gray-700">{label}</label>
-    {children}
-  </div>
-);
-
 const CourseModal = ({
   isOpen,
   onClose,
@@ -26,7 +19,8 @@ const CourseModal = ({
     description: "",
     icon: "",
     category: "",
-    price: "",
+    originalPrice: "",
+    offeredPrice: "",
     duration: "",
     startDate: "",
     endDate: "",
@@ -122,7 +116,8 @@ const CourseModal = ({
       description: "",
       icon: "",
       category: "",
-      price: "",
+      originalPrice: "",
+      offeredPrice: "",
       duration: "",
       startDate: "",
       endDate: "",
@@ -218,13 +213,28 @@ const CourseModal = ({
                       setFormData((prev) => ({ ...prev, category }))
                     }
                   />
-                  <CustomInput
-                    label="Price ($)"
-                    value={formData.price}
-                    onChange={(value) =>
-                      setFormData((prev) => ({ ...prev, price: value }))
-                    }
-                  />
+                  <div className="flex items-center gap-3">
+                    <CustomInput
+                      label="Original Price ($)"
+                      value={formData.originalPrice}
+                      onChange={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          originalPrice: value,
+                        }))
+                      }
+                    />
+                    <CustomInput
+                      label="Offered Price ($)"
+                      value={formData.offeredPrice}
+                      onChange={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          offeredPrice: value,
+                        }))
+                      }
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 mt-3">
                   <CustomInput
@@ -249,19 +259,6 @@ const CourseModal = ({
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold mb-3">Level & Dates</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {/* <FormField label="Level">
-                    <select
-                      name="level"
-                      value={formData.level}
-                      onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-1.5 text-sm bg-white"
-                    >
-                      <option value="">Select Level</option>
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                    </select>
-                  </FormField> */}
                   <CustomSelect
                     label="Level"
                     options={[
@@ -364,17 +361,17 @@ const CourseModal = ({
                       >
                         <div className="col-span-2">
                           <CustomInput
-                          label={`Lecture ${lectureIndex + 1} Title`}
-                          value={lecture.title}
-                          onChange={(value) =>
-                            handleLectureChange(
-                              sectionIndex,
-                              lectureIndex,
-                              "title",
-                              value
-                            )
-                          }
-                        />
+                            label={`Lecture ${lectureIndex + 1} Title`}
+                            value={lecture.title}
+                            onChange={(value) =>
+                              handleLectureChange(
+                                sectionIndex,
+                                lectureIndex,
+                                "title",
+                                value
+                              )
+                            }
+                          />
                         </div>
 
                         <div className="flex items-center justify-center gap-2">
