@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosConfig from "../api/axiosConfig";
 import { ImSpinner2 } from "react-icons/im";
 import { toast } from "react-toastify";
+import CustomInput from "../components/CustomInput";
 
 const Login = () => {
   const navigator = useNavigate();
@@ -12,13 +13,6 @@ const Login = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-
-    setLoginData({ ...loginData, [name]: value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,6 +46,10 @@ const Login = () => {
     }
   }, [navigator]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-white-600 to-white-700 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
@@ -60,27 +58,26 @@ const Login = () => {
           User Login
         </h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
+          <CustomInput
+            label="Email"
             type="email"
-            placeholder="Email"
+            placeholder="john@example.com"
             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-            name="email"
             value={loginData.email}
-            onChange={handleChange}
+            onChange={(value) => setLoginData({ ...loginData, email: value })}
           />
-          <input
+          <CustomInput
+            label="Password"
             type="password"
-            placeholder="Password"
+            placeholder="*******"
             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-            name="password"
             value={loginData.password}
-            onChange={handleChange}
+            onChange={(value) => setLoginData({ ...loginData, password: value })}
           />
           <button
             type="submit"
-            className={`w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             disabled={loading}
           >
             <ImSpinner2

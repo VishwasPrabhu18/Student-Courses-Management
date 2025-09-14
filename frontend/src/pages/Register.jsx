@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import  { useEffect, useState } from "react";
 import { ImSpinner2 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../api/axiosConfig";
+import CustomInput from "../components/CustomInput";
 
 const Register = () => {
   const navigator = useNavigate();
@@ -23,12 +24,6 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setRegisterData({ ...registerData, [name]: value });
-  };
 
   const clearData = () => {
     setRegisterData({
@@ -136,8 +131,12 @@ const Register = () => {
     return false;
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-white-600 to-white-700 flex items-center justify-center px-4 mt-14">
+    <div className="min-h-screen bg-gradient-to-r from-white-600 to-white-700 flex items-center justify-center px-4 mt-14 py-10">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Create Account
@@ -145,26 +144,26 @@ const Register = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-5">
             <div>
-              <input
+              <CustomInput
+                label="First Name"
                 type="text"
-                placeholder="First Name"
+                placeholder="John"
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-                name="firstName"
                 value={registerData.firstName}
-                onChange={handleChange}
+                onChange={(value) => setRegisterData({ ...registerData, firstName: value })}
               />
               <span className="text-red-500 text-sm">
                 {validationError.firstName}
               </span>
             </div>
             <div>
-              <input
+              <CustomInput
+                label="Last Name"
                 type="text"
-                placeholder="Last Name"
+                placeholder="Doe"
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-                name="lastName"
                 value={registerData.lastName}
-                onChange={handleChange}
+                onChange={(value) => setRegisterData({ ...registerData, lastName: value })}
               />
               <span className="text-red-500 text-sm">
                 {validationError.lastName}
@@ -172,52 +171,52 @@ const Register = () => {
             </div>
           </div>
           <div>
-            <input
+            <CustomInput
+              label="Email"
               type="email"
-              placeholder="Email"
+              placeholder="john@example.com"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-              name="email"
               value={registerData.email}
-              onChange={handleChange}
+              onChange={(value) => setRegisterData({ ...registerData, email: value })}
             />
             <span className="text-red-500 text-sm">
               {validationError.email}
             </span>
           </div>
           <div>
-            <input
+            <CustomInput
+              label="Phone Number"
               type="tel"
-              placeholder="Phone Number"
+              placeholder="0123456789"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-              name="phoneNumber"
               value={registerData.phoneNumber}
-              onChange={handleChange}
+              onChange={(value) => setRegisterData({ ...registerData, phoneNumber: value })}
             />
             <span className="text-red-500 text-sm">
               {validationError.phoneNumber}
             </span>
           </div>
           <div>
-            <input
+            <CustomInput
+              label="Password"
               type="password"
-              placeholder="Password"
+              placeholder="*******"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-              name="password"
               value={registerData.password}
-              onChange={handleChange}
+              onChange={(value) => setRegisterData({ ...registerData, password: value })}
             />
             <span className="text-red-500 text-sm">
               {validationError.password}
             </span>
           </div>
           <div>
-            <input
+            <CustomInput
+              label="Confirm Password"
               type="password"
-              placeholder="Confirm Password"
+              placeholder="*******"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-              name="confirmPassword"
               value={registerData.confirmPassword}
-              onChange={handleChange}
+              onChange={(value) => setRegisterData({ ...registerData, confirmPassword: value })}
             />
             <span className="text-red-500 text-sm">
               {validationError.confirmPassword}
