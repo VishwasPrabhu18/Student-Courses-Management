@@ -8,6 +8,20 @@ const UserCourses = () => {
   const [search, setSearch] = useState("");
   const [courseData, setCourseData] = useState([]);
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axiosConfig.get(`/api/users/courses?search=${search}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setCourseData(res.data);
+     } catch (error) {
+      console.error("Error during search:", error);
+    }
+  }
+
   useEffect(() => {
     const getCourses = async () => {
       const token = localStorage.getItem("token");
@@ -36,9 +50,11 @@ const UserCourses = () => {
             type="text"
             placeholder="Search for new courses..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(value) => setSearch(value)}
           />
-          <button className="px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          <button
+            onClick={handleSearch}
+            className="px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
             Browse
           </button>
         </div>
