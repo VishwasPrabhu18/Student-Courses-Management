@@ -1,21 +1,31 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import UserLayout from "./UserLayout";
 import CustomInput from "../../components/CustomInput";
+import SearchCourseResults from "../../components/SearchCourseResult";
+import axiosConfig from "../../api/axiosConfig";
 
 const UserCourses = () => {
   const [search, setSearch] = useState("");
-  const navigate = useNavigate();
+  const [courseData, setCourseData] = useState([]);
 
-  const availableCourses = [
-    { id: 1, name: "React Basics" },
-    { id: 2, name: "Node.js Fundamentals" },
-    { id: 3, name: "Java DSA" },
-  ];
-
-  const filteredCourses = availableCourses.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    const getCourses = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const response = await axiosConfig.get("/api/users/courses", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.data;
+        setCourseData(data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    getCourses();
+  }, []);
 
   return (
     <UserLayout>
@@ -32,6 +42,11 @@ const UserCourses = () => {
             Browse
           </button>
         </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow-lg mt-6 ">
+        <h2 className="text-xl font-semibold mb-4">Search Results</h2>
+        <SearchCourseResults courses={courseData.data} />
       </div>
     </UserLayout>
   );

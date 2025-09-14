@@ -22,10 +22,13 @@ export const UserProvider = ({ children }) => {
       });
       setUser(res.data);
     } catch (err) {
-      console.log(err);
-      
       if (err.response?.status === 401) {
         setError({ status: 401, message: "Unauthorized" });
+        toast.error("Session expired. Please log in again.");
+        setTimeout(() => {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        }, 3000);
       } else {
         setError({ status: 500, message: "Server error" });
       }

@@ -1,94 +1,179 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FiCheckCircle, FiPlayCircle, FiChevronDown } from "react-icons/fi";
+import axiosConfig from "../../api/axiosConfig";
+import LoadingDots from "../../components/LoadingDots";
 import UserLayout from "./UserLayout";
-
-// Example available courses (later you can replace with API)
-const availableCourses = [
-  {
-    id: 1,
-    name: "React Basics",
-    description: "Learn fundamentals of React and build interactive UIs using hooks, props, and state.",
-    instructor: "John Doe",
-    startDate: "2025-09-15",
-    endDate: "2025-10-15",
-    level: "Beginner",
-  },
-  {
-    id: 2,
-    name: "Node.js Fundamentals",
-    description: "Understand backend development with Node.js, Express, and REST APIs.",
-    instructor: "Sarah Lee",
-    startDate: "2025-09-20",
-    endDate: "2025-10-20",
-    level: "Intermediate",
-  },
-  {
-    id: 3,
-    name: "Java DSA",
-    description: "Master Data Structures and Algorithms with Java, including trees, graphs, and recursion.",
-    instructor: "Michael Smith",
-    startDate: "2025-09-25",
-    endDate: "2025-11-25",
-    level: "Advanced",
-  },
-];
 
 const CourseDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const decodedId = atob(id);
 
-  const course = availableCourses.find((c) => c.id === parseInt(id));
+  const [expandedSection, setExpandedSection] = useState(null);
 
-  if (!course) {
+  const [courseData, setCourseData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getCourseById = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axiosConfig.get(`/api/courses/${decodedId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.status === 200) {
+          setCourseData(res.data);
+        }
+      } catch (error) {
+        console.log("Error fetching course by ID:", error);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    };
+    getCourseById();
+  }, []);
+  
+  if (loading) {
     return (
       <UserLayout>
-        <div className="flex justify-center items-center h-screen">
-          <h2 className="text-2xl font-bold text-red-600">❌ Course Not Found</h2>
-        </div>
+        <LoadingDots />
       </UserLayout>
     );
   }
 
   return (
     <UserLayout>
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8 mt-12">
-        {/* Course Title */}
-        <h1 className="text-3xl font-bold text-gray-800 mb-3">{course.name}</h1>
-        <p className="text-gray-600 mb-6">{course.description}</p>
-
-        {/* Course Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-          <div className="p-4 border rounded-lg shadow-sm">
-            <span className="font-semibold text-gray-700">Instructor: </span>
-            {course.instructor}
-          </div>
-          <div className="p-4 border rounded-lg shadow-sm">
-            <span className="font-semibold text-gray-700">Level: </span>
-            {course.level}
-          </div>
-          <div className="p-4 border rounded-lg shadow-sm">
-            <span className="font-semibold text-gray-700">Start Date: </span>
-            {course.startDate}
-          </div>
-          <div className="p-4 border rounded-lg shadow-sm">
-            <span className="font-semibold text-gray-700">End Date: </span>
-            {course.endDate}
-          </div>
+      <div className="bg-gray-50 min-h-screen">
+        <div className="px-6 py-6 border-b bg-white shadow-sm">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {courseData.title}
+          </h1>
+          <p className="text-lg text-gray-700 mt-2">{courseData.description}</p>
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-4">
-          <button
-            onClick={() => alert(`✅ You have enrolled in ${course.name}`)}
-            className="px-5 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-          >
-            Confirm Enrollment
-          </button>
-          <button
-            onClick={() => navigate("/user/courses")}
-            className="px-5 py-2 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-600 transition"
-          >
-            Back to Courses
-          </button>
+        <div className="flex flex-col lg:flex-row px-6 pt-8">
+          {/* LEFT SIDE CONTENT */}
+          <div className="flex-1 lg:pr-10">
+            {/* What you'll learn */}
+            <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
+              <h2 className="text-2xl font-semibold mb-4">What you'll learn</h2>
+              <div className="flex flex-col gap-3">
+                {courseData?.whatYouLearn?.map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <FiCheckCircle className="text-green-600" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Course Content */}
+            <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
+              <h2 className="text-2xl font-semibold mb-4">Course content</h2>
+              {courseData?.courseContent?.map((section, i) => (
+                <div key={i} className="mb-4 border rounded-lg">
+                  <button
+                    className="flex justify-between items-center w-full px-4 py-3 font-semibold text-left hover:bg-gray-50 hover:rounded-lg"
+                    onClick={() =>
+                      setExpandedSection(expandedSection === i ? null : i)
+                    }
+                  >
+                    {section.section}
+                    <FiChevronDown
+                      className={`transform transition-transform ${
+                        expandedSection === i ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {expandedSection === i && (
+                    <div className="px-4 pb-2">
+                      {section.lectures.map((lec, j) => (
+                        <div
+                          key={j}
+                          className="flex justify-between py-2 border-b text-gray-700"
+                        >
+                          <span>{lec.title}</span>
+                          <span className="text-sm text-gray-500">
+                            {lec.duration}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </section>
+
+            {/* Requirements */}
+            <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
+              <h2 className="text-2xl font-semibold mb-4">Requirements</h2>
+              <ul className="list-disc list-inside text-gray-700">
+                {courseData?.requirements?.map((req, i) => (
+                  <li key={i}>{req}</li>
+                ))}
+              </ul>
+            </section>
+
+            {/* Description */}
+            <section className="bg-white p-6 rounded-2xl shadow-md mb-6">
+              <h2 className="text-2xl font-semibold mb-4">Description</h2>
+              <p className="text-gray-700">{courseData.description}</p>
+            </section>
+          </div>
+
+          {/* RIGHT SIDE - COURSE CARD */}
+          <div className="w-full lg:w-96 bg-white shadow-xl rounded-2xl p-6 h-fit sticky top-24 mb-6">
+            <div className="relative mb-4">
+              <img
+                src={
+                  courseData.thumbnail ||
+                  "https://via.placeholder.com/400x200.png?text=Course+Thumbnail"
+                }
+                alt="Course Preview"
+                className="rounded-xl"
+              />
+              <button className="absolute inset-0 flex items-center justify-center text-white text-5xl">
+                <FiPlayCircle />
+              </button>
+            </div>
+
+            <div className="mb-4 flex items-center gap-4">
+              <span className="text-lg font-semibold">Price:</span>
+              <p className="text-3xl font-bold mb-2">
+                {courseData.offeredPrice === 0 ? (
+                  `₹${courseData.originalPrice}`
+                ) : (
+                  <>
+                    ₹{courseData.offeredPrice}{" "}
+                    <span className="text-gray-500 text-lg line-through ml-2">
+                      ₹{courseData.originalPrice}
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+
+            <button className="w-full bg-blue-600 text-white py-3 rounded-lg mb-2 hover:bg-blue-700 shadow-md">
+              Enroll Now
+            </button>
+            <button className="w-full bg-gray-200 py-3 rounded-lg mb-4 hover:bg-gray-300">
+              Add to Cart
+            </button>
+
+            <h3 className="font-semibold mb-2">This course includes:</h3>
+            <ul className="text-gray-700 list-disc list-outside pl-6">
+              {courseData?.highlights?.map((inc, i) => (
+                <li key={i} className="leading-relaxed">
+                  {inc}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </UserLayout>

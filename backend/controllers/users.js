@@ -2,6 +2,7 @@ import UserModel from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import EnrollmentModal from "../models/enrollment.js";
+import CoursesModel from "../models/courses.js";
 
 export const createUser = async (req, res) => {
   const reqData = req.body;
@@ -107,7 +108,9 @@ export const getUserDashboardData = async (req, res) => {
     ).length;
     const overDueCount = userCourseData.filter((course) => {
       if (course.endDate) {
-        return new Date(course.endDate) < new Date() && course.status !== "completed";
+        return (
+          new Date(course.endDate) < new Date() && course.status !== "completed"
+        );
       }
       return false;
     }).length;
@@ -122,5 +125,36 @@ export const getUserDashboardData = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getAllCoursesData = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    let filter = { isActive: true };
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const courses = await CoursesModel.find(filter)
+      .sort({ createdAt: -1 }) // newest first
+      .limit(10);
+
+    res.status(200).json({
+      success: true,
+      count: courses.length,
+      data: courses,
+    });
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
   }
 };

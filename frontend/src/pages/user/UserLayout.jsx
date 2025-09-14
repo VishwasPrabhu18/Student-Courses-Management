@@ -6,33 +6,23 @@ import { useEffect } from "react";
 import CustomeLoader from "../../components/CustomeLoader";
 
 const UserLayout = ({ children }) => {
-  const { error, loading, fetchUser } = useUser();
+  const { loading, fetchUser } = useUser();
   const token = localStorage.getItem("token");
   const isUser = token && JSON.parse(atob(token.split(".")[1])).role === "user";
 
   const navigate = useNavigate();
 
-  const handleAccessDenied = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
-
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    } else {
-      fetchUser();
-    }
+    const mainMethod = async () => {
+      if (!token) {
+        navigate("/login");
+      } else {
+        await fetchUser();
+      }
+    };
+    mainMethod();
+    window.scrollTo(0, 0);
   }, []);
-
-  if (error?.status === 401) {
-    return (
-      <AccessDeniedCard
-        onBack={handleAccessDenied}
-        message="Session expired. Please log in again."
-      />
-    );
-  }
 
   if (loading) {
     return <CustomeLoader />;

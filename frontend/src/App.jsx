@@ -13,7 +13,7 @@ import UserSettings from "./pages/user/UserSettings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersList from "./pages/admin/UsersList";
 import Courses from "./pages/admin/Courses";
-import CourseDetails from "./pages/admin/CourseDetails";
+import CourseDetails from "./pages/user/CourseDetails";
 import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminCourseDetails from "./pages/admin/AdminCourseDetails";
@@ -24,7 +24,7 @@ function App() {
       <Navbar />
       <ToastContainer
         position="bottom-right"
-        autoClose={5000}
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop
         closeOnClick={false}
@@ -52,6 +52,7 @@ function App() {
         <Route path="/user" element={<UserHome />} />
         <Route path="/user/profile" element={<UserProfile />} />
         <Route path="/user/courses" element={<UserCourses />} />
+        <Route path="/user/courses/:id" element={<CourseDetails />} />
         <Route path="/user/settings" element={<UserSettings />} />
       </Routes>
       <Footer />

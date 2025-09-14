@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FiEye, FiTrash2 } from "react-icons/fi";
 import ConfirmationModal from "./ConfirmationModal";
 
-const CourseTable = ({ courseData }) => {
+const CourseTable = ({ courseData, tableHeaders }) => {
   const navigate = useNavigate();
    const [deleteOpen, setDeleteOpen] = useState({
     isOpen: false,
@@ -22,12 +22,11 @@ const CourseTable = ({ courseData }) => {
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="bg-gradient-to-r from-blue-100 to-blue-200 text-left text-gray-700 uppercase text-xs tracking-wider">
-            <th className="p-3 rounded-tl-xl">#</th>
-            <th className="p-3">Course Name</th>
-            <th className="p-3">Description</th>
-            <th className="p-3">Start Date</th>
-            <th className="p-3">End Date</th>
-            <th className="p-3">Status</th>
+            {tableHeaders.map((header) => (
+              <th key={header} className="p-3">
+                {header}
+              </th>
+            ))}
             <th className="p-3 rounded-tr-xl">Actions</th>
           </tr>
         </thead>

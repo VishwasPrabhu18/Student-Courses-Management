@@ -38,6 +38,7 @@ const Login = () => {
       }
     } catch (error) {
       console.log("error while logging: ", error);
+      toast.error(error?.response?.data?.message);
       setLoading(false);
     }
   };

@@ -93,7 +93,17 @@ const Courses = () => {
       )}
       {/* Table View */}
       {tableCourseData.length > 0 && (
-        <CourseTable courseData={tableCourseData} />
+        <CourseTable
+          courseData={tableCourseData}
+          tableHeaders={[
+            "#",
+            "Course Name",
+            "Status",
+            "Start Date",
+            "End Date",
+            "Actions",
+          ]}
+        />
       )}
       {/* Course Modal */}
       <CourseModal
