@@ -158,3 +158,28 @@ export const getAllCoursesData = async (req, res) => {
     });
   }
 };
+
+export const resetUserPassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.id;
+  const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS);
+  try {
+    const user = await UserModel.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordValid)
+      return res.status(401).json({ message: "Current password is incorrect" });
+    const hashedNewPassword = await bcrypt.hash(
+      newPassword,
+      BCRYPT_SALT_ROUNDS
+    );
+    user.password = hashedNewPassword;
+    await user.save();
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

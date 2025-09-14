@@ -1,17 +1,59 @@
 import { useState } from "react";
 import UserLayout from "./UserLayout";
+import CustomInput from "../../components/CustomInput";
+import { ImSpinner2 } from "react-icons/im";
+import axiosConfig from "../../api/axiosConfig";
+import { toast } from "react-toastify";
 
 const UserSettings = () => {
   const [current, setCurrent] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChangePassword = () => {
-    if (newPass !== confirm) {
-      alert("Passwords do not match!");
-      return;
+  const validatePassword = () => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    
+    if(!passwordRegex.test(newPass)) {
+      toast.error("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+      return false;
     }
-    alert("Password updated successfully!");
+    if(newPass !== confirm) {
+      toast.error("New password and confirm password do not match.");
+      return false;
+    }
+    return true;
+  }
+
+  const handleChangePassword = async () => {
+    if(!validatePassword()) return;
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axiosConfig.post("/api/users/reset-password", {
+        currentPassword: current,
+        newPassword: newPass,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        toast.success("Password updated successfully");
+        setCurrent("");
+        setNewPass("");
+        setConfirm("");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      const message = error.response?.data?.message || "Failed to update password";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -20,33 +62,40 @@ const UserSettings = () => {
         <h1 className="text-2xl font-bold mb-6">Change Password</h1>
 
         <div className="space-y-4">
-          <input
+          <CustomInput
+            label="Current Password"
             type="password"
             placeholder="Current Password"
-            className="w-full border p-2 rounded"
             value={current}
-            onChange={(e) => setCurrent(e.target.value)}
+            onChange={(value) => setCurrent(value)}
+            disabled={loading}
           />
-          <input
+          <CustomInput
+            label="New Password"
             type="password"
             placeholder="New Password"
-            className="w-full border p-2 rounded"
             value={newPass}
-            onChange={(e) => setNewPass(e.target.value)}
+            onChange={(value) => setNewPass(value)}
+            disabled={loading}
           />
-          <input
+          <CustomInput
+            label="Confirm New Password"
             type="password"
             placeholder="Confirm New Password"
-            className="w-full border p-2 rounded"
             value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            onChange={(value) => setConfirm(value)}
+            disabled={loading}
           />
 
           <button
             onClick={handleChangePassword}
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            className={`w-full px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700  ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={loading}
           >
-            Update Password
+            <ImSpinner2
+              className={loading ? "inline-block mr-2 animate-spin" : "hidden"}
+            />
+            {loading ? "Updating..." : "Update Password"}
           </button>
         </div>
       </div>
