@@ -4,6 +4,7 @@ import CustomInput from "../../components/CustomInput";
 import { ImSpinner2 } from "react-icons/im";
 import axiosConfig from "../../api/axiosConfig";
 import { toast } from "react-toastify";
+import PaymentModal from "../../components/PaymentModal ";
 
 const UserSettings = () => {
   const [current, setCurrent] = useState("");
@@ -11,15 +12,24 @@ const UserSettings = () => {
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [open, setOpen] = useState(false);
+
+  const sampleCourse = {
+    title: "React Advancement",
+    description: "Master advanced React patterns.",
+    originalPrice: 2500,
+    offeredPrice: 1499,
+  };
+
   const validatePassword = () => {
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    
-    if(!passwordRegex.test(newPass)) {
+
+    if (!passwordRegex.test(newPass)) {
       toast.error("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
       return false;
     }
-    if(newPass !== confirm) {
+    if (newPass !== confirm) {
       toast.error("New password and confirm password do not match.");
       return false;
     }
@@ -27,7 +37,7 @@ const UserSettings = () => {
   }
 
   const handleChangePassword = async () => {
-    if(!validatePassword()) return;
+    if (!validatePassword()) return;
 
     try {
       setLoading(true);
@@ -98,6 +108,17 @@ const UserSettings = () => {
             {loading ? "Updating..." : "Update Password"}
           </button>
         </div>
+      </div>
+
+      <div className="p-6">
+        <button
+          onClick={() => setOpen(true)}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Make Payment
+        </button>
+
+        <PaymentModal isOpen={open} onClose={() => setOpen(false)} course={sampleCourse} />
       </div>
     </UserLayout>
   );

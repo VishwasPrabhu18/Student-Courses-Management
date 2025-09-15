@@ -4,7 +4,7 @@ import authMiddleware from "../middleware/middleware.js";
 
 const adminRouter = express.Router();
 
-adminRouter.get("/", authMiddleware, getUsers);
+adminRouter.get("/", getUsers);
 adminRouter.get("/students", authMiddleware, getAllSudents);
 adminRouter.delete("/:id", authMiddleware, deleteUser);
 // adminRouter.get("/:id", getUserById);

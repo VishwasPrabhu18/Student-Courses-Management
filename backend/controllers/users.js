@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import EnrollmentModal from "../models/enrollment.js";
 import CoursesModel from "../models/courses.js";
+import mongoose from "mongoose";
 
 export const createUser = async (req, res) => {
   const reqData = req.body;
@@ -179,6 +180,54 @@ export const resetUserPassword = async (req, res) => {
     user.password = hashedNewPassword;
     await user.save();
     res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getProfileData = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const user = await UserModel.findById(id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const enrollments = await EnrollmentModal.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: "Course", // collection name in DB
+          localField: "courseId",
+          foreignField: "_id",
+          as: "courseDetails",
+        },
+      },
+      { $unwind: "$courseDetails" },
+      {
+        $project: {
+          status: 1,
+          "courseDetails.title": 1,
+        },
+      },
+    ]);
+
+    let profilePicBase64 = null;
+    if (user.profilePic) {
+      profilePicBase64 = `data:${
+        user.profilePic.contentType
+      };base64,${user.profilePic.data.toString("base64")}`;
+    }
+
+    res.status(200).json({
+      message: "Profile data fetched successfully",
+      data: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        profilePic: profilePicBase64,
+        phoneNumber: user.phoneNumber,
+        joinedDate: user.createdAt,
+        enrollments,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
