@@ -1,7 +1,6 @@
 import UserModel from "../models/users.js";
 import CoursesModel from "../models/courses.js";
 
-
 export const fetchImages = async (req, res) => {
   const { q } = req.query;
   const PAGES = req.query.pages || 1;

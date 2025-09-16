@@ -26,7 +26,7 @@ const CourseDetails = () => {
         });
 
         if (res.status === 200) {
-          setCourseData(res.data);
+          setCourseData(res.data.data);
         }
       } catch (error) {
         console.log("Error fetching course by ID:", error);
