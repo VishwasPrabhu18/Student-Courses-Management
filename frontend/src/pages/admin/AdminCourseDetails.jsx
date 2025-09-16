@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosConfig from "../../api/axiosConfig";
 import AdminLayout from "./AdminLayout";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -7,8 +7,11 @@ import { getCourseIcon } from "../../constants/iconConstants";
 import LoadingDots from "../../components/LoadingDots";
 import CourseModal from "../../components/CourseModal";
 import { toast } from "react-toastify";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { FiTrash2 } from "react-icons/fi";
 
 const AdminCourseDetails = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const decodedId = atob(id);
   const [course, setCourse] = useState(null);
@@ -16,6 +19,17 @@ const AdminCourseDetails = () => {
   const [courseIcon, setCourseIcon] = useState({ Icon: null });
   const [isOpen, setIsOpen] = useState(false);
   const [courseModalData, setCourseModalData] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    icon: null,
+    bgClassName: "",
+    courseId: "",
+    iconBg: "",
+    cardBg: "",
+    btnBg: "",
+  });
 
   const handleSubmit = async (data) => {
     try {
@@ -50,7 +64,7 @@ const AdminCourseDetails = () => {
           },
         });
 
-        if (res.status === 200) {          
+        if (res.status === 200) {
           setCourse(res.data.data);
           setCourseIcon({ Icon: getCourseIcon(res.data.data.icon) });
         }
@@ -67,6 +81,28 @@ const AdminCourseDetails = () => {
   const handleEditClick = () => {
     setCourseModalData(course);
     setIsOpen(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axiosConfig.delete(`/api/courses/${decodedId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status === 200) {
+        toast.success("Course deleted successfully!");
+        setCourse(null);
+        navigate("/admin/courses");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+      setDeleteOpen({ isOpen: false });
+    }
   }
 
   if (loading) {
@@ -96,7 +132,22 @@ const AdminCourseDetails = () => {
           >
             <FaEdit /> Edit
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow">
+          <button
+            onClick={() =>
+              setDeleteOpen({
+                isOpen: true,
+                title: "Confirm Deletion",
+                message:
+                  "Are you sure you want to delete this course?",
+                icon: <FiTrash2 size={18} />,
+                bgClassName: "bg-red-100 text-red-700",
+                iconBg: "bg-red-200 text-red-800",
+                cardBg: "bg-red-50",
+                btnBg: "bg-red-600 hover:bg-red-700 text-white",
+                courseId: decodedId,
+              })
+            }
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow">
             <FaTrash /> Delete
           </button>
         </div>
@@ -236,6 +287,19 @@ const AdminCourseDetails = () => {
         initialData={courseModalData}
         mode="edit"
         cId={decodedId}
+      />
+
+      <ConfirmationModal
+        isOpen={deleteOpen.isOpen}
+        title={deleteOpen.title}
+        description={deleteOpen.message}
+        onOk={handleDelete}
+        onCancel={() => setDeleteOpen({ isOpen: false })}
+        icon={deleteOpen.icon}
+        bgClassName={deleteOpen.bgClassName}
+        iconBg={deleteOpen.iconBg}
+        cardBg={deleteOpen.cardBg}
+        btnBg={deleteOpen.btnBg}
       />
     </AdminLayout>
   );

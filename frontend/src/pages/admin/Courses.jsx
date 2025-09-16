@@ -28,8 +28,6 @@ const Courses = () => {
   };
 
   const handleSubmit = async (data) => {
-    console.log(data);
-
     try {
       const token = localStorage.getItem("token");
       const res = await axiosConfig.post("/api/courses", data, {

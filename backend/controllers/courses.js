@@ -65,7 +65,14 @@ export const updateCourse = async (req, res) => {
     if (!updatedCourse) {
       return res.status(404).json({ message: "Course not found" });
     }
-    res.status(200).json(updatedCourse);
+    let thumbnailBase64 = "";
+    if (updatedCourse.thumbnail && updatedCourse.thumbnail.data){
+      thumbnailBase64 = `data:${
+        updatedCourse.thumbnail.contentType
+      };base64,${updatedCourse.thumbnail.data.toString("base64")}`;
+    }
+    const courseData = {...updatedCourse._doc, thumbnail: thumbnailBase64};
+    res.status(200).json(courseData);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -50,11 +50,11 @@ const ThumbnailUpload = ({ thumbnail, onUpload, isFileUploaded, cId }) => {
         onUpload(res.data.imageUrl);
         setSelectedFile(null);
         setPreviewUrl(null);
-        toast.success("Profile picture updated successfully!");
+        toast.success("Thumbnail picture updated successfully!");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Failed to update profile picture.");
+      toast.error("Failed to update thumbnail picture.");
     }
   }
 

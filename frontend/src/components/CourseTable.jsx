@@ -6,7 +6,7 @@ import ConfirmationModal from "./ConfirmationModal";
 
 const CourseTable = ({ courseData, tableHeaders }) => {
   const navigate = useNavigate();
-   const [deleteOpen, setDeleteOpen] = useState({
+  const [deleteOpen, setDeleteOpen] = useState({
     isOpen: false,
     title: "",
     message: "",
@@ -37,9 +37,8 @@ const CourseTable = ({ courseData, tableHeaders }) => {
               return (
                 <tr
                   key={c.title}
-                  className={`border-b transition duration-150 ${
-                    idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } hover:bg-gray-100`}
+                  className={`border-b transition duration-150 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100`}
                 >
                   <td className="p-3 font-medium">{idx + 1}</td>
                   <td className="p-3 font-semibold">
@@ -52,11 +51,10 @@ const CourseTable = ({ courseData, tableHeaders }) => {
                   <td className="p-3">{formatDate(c.endDate)}</td>
                   <td className="p-3">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        c.isActive
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${c.isActive
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
-                      }`}
+                        }`}
                     >
                       {c.isActive ? "Active" : "Inactive"}
                     </span>
@@ -105,7 +103,7 @@ const CourseTable = ({ courseData, tableHeaders }) => {
         isOpen={deleteOpen.isOpen}
         title={deleteOpen.title}
         description={deleteOpen.message}
-        onOk={() => {}}
+        onOk={() => { }}
         onCancel={() => setDeleteOpen({ isOpen: false })}
         icon={deleteOpen.icon}
         bgClassName={deleteOpen.bgClassName}
