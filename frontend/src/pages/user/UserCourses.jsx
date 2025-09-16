@@ -55,7 +55,7 @@ const UserCourses = () => {
           <button
             onClick={handleSearch}
             className="px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Browse
+            Search
           </button>
         </div>
       </div>

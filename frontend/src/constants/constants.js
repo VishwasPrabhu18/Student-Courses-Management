@@ -12,3 +12,9 @@ export const UserSidebarLinks = [
   { name: "Courses", path: "/user/courses", icon: FaBook },
   { name: "Settings", path: "/user/settings", icon: FaCog }
 ];
+
+export const NavbarLinks = [
+  { name: "Home", path: "/" },
+  { name: "About Us", path: "/about" },
+  { name: "Contact Us", path: "/contact" }
+];

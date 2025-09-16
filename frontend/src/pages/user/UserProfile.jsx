@@ -13,7 +13,7 @@ const UserProfile = () => {
       const formData = new FormData();
       formData.append("image", file);
       const token = localStorage.getItem("token");
-      const res = await axiosConfig.post("/api/images/upload", formData, {
+      const res = await axiosConfig.post("/api/images/upload-profile-pic", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ const UserProfile = () => {
         </div>
 
         {/* Enrolled Courses */}
-        <h2 className="text-xl font-semibold mt-8 mb-4">Enrolled Courses ({profileData.enrollments.length})</h2>
+        <h2 className="text-xl font-semibold mt-8 mb-4">Enrolled Courses ({profileData?.enrollments.length})</h2>
         <ul className="space-y-3">
           {profileData?.enrollments.map((course) => (
             <li

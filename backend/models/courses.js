@@ -42,8 +42,8 @@ const courseSchema = new mongoose.Schema(
       default: true,
     },
     thumbnail: {
-      type: Buffer,
-      default: null,
+      data: Buffer,
+      contentType: String,
     },
     instructor: {
       type: String,

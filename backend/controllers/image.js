@@ -1,4 +1,6 @@
 import UserModel from "../models/users.js";
+import CoursesModel from "../models/courses.js";
+
 
 export const fetchImages = async (req, res) => {
   const { q } = req.query;
@@ -14,7 +16,7 @@ export const fetchImages = async (req, res) => {
   res.json(imageUrls);
 };
 
-export const uploadImage = async (req, res) => {
+export const uploadProfilePic = async (req, res) => {
   const { id } = req.user;
   try {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
@@ -30,6 +32,37 @@ export const uploadImage = async (req, res) => {
 
     res.json({
       message: "Profile pic uploaded successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const uploadThumbnail = async (req, res) => {
+  const { cId } = req.params;
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+    const course = await CoursesModel.findById(cId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    course.thumbnail = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    };
+    await course.save();
+
+    let thumbnailBase64 = null;
+    if (course.thumbnail) {
+      thumbnailBase64 = `data:${
+        course.thumbnail.contentType
+      };base64,${course.thumbnail.data.toString("base64")}`;
+    }
+
+    res.json({
+      message: "Thumbnail uploaded successfully",
+      imageUrl: thumbnailBase64,
     });
   } catch (err) {
     console.error(err);

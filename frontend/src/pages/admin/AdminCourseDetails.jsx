@@ -19,8 +19,9 @@ const AdminCourseDetails = () => {
 
   const handleSubmit = async (data) => {
     try {
+      const { thumbnail, ...updatedData } = data;
       const token = localStorage.getItem("token");
-      const res = await axiosConfig.put(`/api/courses/${decodedId}`, data, {
+      const res = await axiosConfig.put(`/api/courses/${decodedId}`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -49,9 +50,9 @@ const AdminCourseDetails = () => {
           },
         });
 
-        if (res.status === 200) {
-          setCourse(res.data);
-          setCourseIcon({ Icon: getCourseIcon(res.data.icon) });
+        if (res.status === 200) {          
+          setCourse(res.data.data);
+          setCourseIcon({ Icon: getCourseIcon(res.data.data.icon) });
         }
       } catch (error) {
         console.log("Error fetching course by ID:", error);
@@ -196,7 +197,7 @@ const AdminCourseDetails = () => {
           <h2 className="font-semibold mb-2">Pricing</h2>
 
           {course.offeredPrice > 0 &&
-          course.offeredPrice < course.originalPrice ? (
+            course.offeredPrice < course.originalPrice ? (
             <>
               <p>
                 Original Price:{" "}
@@ -234,6 +235,7 @@ const AdminCourseDetails = () => {
         onSubmit={handleSubmit}
         initialData={courseModalData}
         mode="edit"
+        cId={decodedId}
       />
     </AdminLayout>
   );

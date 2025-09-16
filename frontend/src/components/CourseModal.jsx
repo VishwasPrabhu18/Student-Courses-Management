@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import ImagePickerModal from "./ImagePickerModal";
 import { FaTrash } from "react-icons/fa";
 import IconSelect from "./IconSelect";
 import CustomSelect from "./CustomSelect";
 import CustomInput from "./CustomInput";
 import { formatDateForInput } from "../constants/helperMethods";
+import ThumbnailUpload from "./ThumbnailUpload";
 
 const CourseModal = ({
   isOpen,
@@ -14,7 +14,9 @@ const CourseModal = ({
   onSubmit,
   initialData,
   mode = "create",
+  cId = ""
 }) => {
+  const [fileUploaded, setFileUploaded] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -34,8 +36,6 @@ const CourseModal = ({
     highlights: [""],
     courseContent: [{ section: "", lectures: [{ title: "", duration: "" }] }],
   });
-
-  const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   useEffect(() => {
     if (initialData) setFormData({ ...initialData });
@@ -159,7 +159,7 @@ const CourseModal = ({
             </div>
 
             {/* Form */}
-            <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
+            <div className="mt-4 space-y-6">
               {/* Basic Info */}
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold mb-3">Basic Info</h3>
@@ -296,8 +296,8 @@ const CourseModal = ({
                     {field === "whatYouLearn"
                       ? "What You’ll Learn"
                       : field === "requirements"
-                      ? "Requirements"
-                      : "Highlights"}
+                        ? "Requirements"
+                        : "Highlights"}
                   </h3>
                   {formData[field].map((item, i) => (
                     <div key={i} className="flex gap-2 mb-2">
@@ -436,36 +436,22 @@ const CourseModal = ({
                   <button
                     type="button"
                     onClick={handleToggle}
-                    className={`w-14 h-7 flex items-center rounded-full p-1 transition ${
-                      formData.isActive ? "bg-green-500" : "bg-gray-400"
-                    }`}
+                    className={`w-14 h-7 flex items-center rounded-full p-1 transition ${formData.isActive ? "bg-green-500" : "bg-gray-400"
+                      }`}
                   >
                     <div
-                      className={`bg-white w-5 h-5 rounded-full shadow-md transform transition ${
-                        formData.isActive ? "translate-x-7" : ""
-                      }`}
+                      className={`bg-white w-5 h-5 rounded-full shadow-md transform transition ${formData.isActive ? "translate-x-7" : ""
+                        }`}
                     />
                   </button>
                 </div>
                 <div className="flex flex-col items-center gap-3">
-                  {formData.thumbnail ? (
-                    <div className="w-full max-w-lg aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                      <img
-                        src={formData.thumbnail}
-                        alt="thumbnail"
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 text-sm">No image selected</p>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setImagePickerOpen(true)}
-                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Select Thumbnail
-                  </button>
+                  <ThumbnailUpload
+                    thumbnail={formData.thumbnail}
+                    onUpload={(url) => setFormData((prev) => ({ ...prev, thumbnail: url }))}
+                    isFileUploaded={(fileStatus) => setFileUploaded(fileStatus)}
+                    cId={cId}
+                  />
                 </div>
               </div>
 
@@ -478,22 +464,19 @@ const CourseModal = ({
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                <motion.button
+                  disabled={fileUploaded}
+                  type="button"
+                  onClick={handleSubmit}
+                  className={`px-4 py-2 cursor-help ${fileUploaded ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"} text-white rounded-lg text-sm`}
                 >
                   {mode === "create" ? "Create Course" : "Save Changes"}
-                </button>
+                </motion.button>
               </div>
-            </form>
+            </div>
           </motion.div>
         </motion.div>
       )}
-      <ImagePickerModal
-        isOpen={imagePickerOpen}
-        onClose={() => setImagePickerOpen(false)}
-        onSelect={(url) => setFormData((prev) => ({ ...prev, thumbnail: url }))}
-      />
     </AnimatePresence>
   );
 };

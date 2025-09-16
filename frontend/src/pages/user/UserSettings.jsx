@@ -4,7 +4,7 @@ import CustomInput from "../../components/CustomInput";
 import { ImSpinner2 } from "react-icons/im";
 import axiosConfig from "../../api/axiosConfig";
 import { toast } from "react-toastify";
-import PaymentModal from "../../components/PaymentModal ";
+// import PaymentModal from "../../components/PaymentModal ";
 
 const UserSettings = () => {
   const [current, setCurrent] = useState("");
@@ -12,14 +12,14 @@ const UserSettings = () => {
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
 
-  const sampleCourse = {
-    title: "React Advancement",
-    description: "Master advanced React patterns.",
-    originalPrice: 2500,
-    offeredPrice: 1499,
-  };
+  // const sampleCourse = {
+  //   title: "React Advancement",
+  //   description: "Master advanced React patterns.",
+  //   originalPrice: 2500,
+  //   offeredPrice: 1499,
+  // };
 
   const validatePassword = () => {
     const passwordRegex =
@@ -110,7 +110,7 @@ const UserSettings = () => {
         </div>
       </div>
 
-      <div className="p-6">
+      {/* <div className="p-6">
         <button
           onClick={() => setOpen(true)}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -119,7 +119,7 @@ const UserSettings = () => {
         </button>
 
         <PaymentModal isOpen={open} onClose={() => setOpen(false)} course={sampleCourse} />
-      </div>
+      </div> */}
     </UserLayout>
   );
 };

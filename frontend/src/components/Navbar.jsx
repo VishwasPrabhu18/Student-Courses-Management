@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import { NavbarLinks } from "../constants/constants";
 
-export default function Navbar() {
+const Navbar = () => {
   const token = localStorage.getItem("token");
   const isUser = token && JSON.parse(atob(token.split(".")[1])).role === "user";
   return (
@@ -11,21 +12,14 @@ export default function Navbar() {
 
         {/* Center Menu */}
         <ul className="absolute left-1/2 transform -translate-x-1/2 flex space-x-8 font-medium">
-          <li>
-            <Link to="/" className="hover:text-yellow-300">
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="/about" className="hover:text-yellow-300">
-              About Us
-            </Link>
-          </li>
-          <li>
-            <Link to="/contact" className="hover:text-yellow-300">
-              Contact Us
-            </Link>
-          </li>
+          {
+            NavbarLinks.map((link) => (
+              <li key={link.name}>
+                <Link to={link.path} className="hover:text-yellow-300">
+                  {link.name}
+                </Link>
+              </li>
+            ))}
         </ul>
 
         {/* Right Login Button */}
@@ -43,3 +37,5 @@ export default function Navbar() {
     </nav>
   );
 }
+
+export default Navbar;
