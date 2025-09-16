@@ -40,8 +40,8 @@ export const getCourseById = async (req, res) => {
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
-    let thumbnailBase64 = null;
-    if (course.thumbnail) {
+    let thumbnailBase64 = "";
+    if (course.thumbnail && course.thumbnail.data){
       thumbnailBase64 = `data:${
         course.thumbnail.contentType
       };base64,${course.thumbnail.data.toString("base64")}`;
