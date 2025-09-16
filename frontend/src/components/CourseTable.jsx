@@ -1,22 +1,9 @@
-import { useState } from "react";
 import { formatDate, shortenText } from "../constants/helperMethods";
 import { useNavigate } from "react-router-dom";
-import { FiEye, FiTrash2 } from "react-icons/fi";
-import ConfirmationModal from "./ConfirmationModal";
+import { FiEye } from "react-icons/fi";
 
 const CourseTable = ({ courseData, tableHeaders }) => {
   const navigate = useNavigate();
-  const [deleteOpen, setDeleteOpen] = useState({
-    isOpen: false,
-    title: "",
-    message: "",
-    icon: null,
-    bgClassName: "",
-    courseId: "",
-    iconBg: "",
-    cardBg: "",
-    btnBg: "",
-  });
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
       <table className="w-full border-collapse text-sm">
@@ -52,8 +39,8 @@ const CourseTable = ({ courseData, tableHeaders }) => {
                   <td className="p-3">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${c.isActive
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
                         }`}
                     >
                       {c.isActive ? "Active" : "Inactive"}
@@ -65,25 +52,6 @@ const CourseTable = ({ courseData, tableHeaders }) => {
                       className="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors"
                     >
                       <FiEye size={18} />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setDeleteOpen({
-                          isOpen: true,
-                          title: "Confirm Deletion",
-                          message:
-                            "Are you sure you want to delete this course?",
-                          icon: <FiTrash2 size={18} />,
-                          bgClassName: "bg-red-100 text-red-700",
-                          iconBg: "bg-red-200 text-red-800",
-                          cardBg: "bg-red-50",
-                          btnBg: "bg-red-600 hover:bg-red-700 text-white",
-                          courseId: c.id,
-                        })
-                      }
-                      className="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                    >
-                      <FiTrash2 size={18} />
                     </button>
                   </td>
                 </tr>
@@ -98,19 +66,6 @@ const CourseTable = ({ courseData, tableHeaders }) => {
           )}
         </tbody>
       </table>
-
-      <ConfirmationModal
-        isOpen={deleteOpen.isOpen}
-        title={deleteOpen.title}
-        description={deleteOpen.message}
-        onOk={() => { }}
-        onCancel={() => setDeleteOpen({ isOpen: false })}
-        icon={deleteOpen.icon}
-        bgClassName={deleteOpen.bgClassName}
-        iconBg={deleteOpen.iconBg}
-        cardBg={deleteOpen.cardBg}
-        btnBg={deleteOpen.btnBg}
-      />
     </div>
   );
 };
