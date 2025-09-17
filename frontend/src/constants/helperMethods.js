@@ -16,3 +16,18 @@ export const formatDateForInput = (isoDate) => {
   if (!isoDate) return "";
   return new Date(isoDate).toISOString().split("T")[0];
 };
+
+export const courseStatus = (status) => {
+  switch (status) {
+    case "enrolled":
+      return "bg-gray-200 text-gray-800"; // neutral
+    case "in-progress":
+      return "bg-blue-200 text-blue-800"; // active
+    case "completed":
+      return "bg-green-200 text-green-800"; // success
+    case "overdue":
+      return "bg-red-200 text-red-800"; // alert
+    default:
+      return "bg-gray-200 text-gray-700"; // fallback
+  }
+};

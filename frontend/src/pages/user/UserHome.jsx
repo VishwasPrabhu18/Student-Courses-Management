@@ -97,6 +97,7 @@ const UserHome = () => {
             tableHeaders={[
               "#",
               "Course Name",
+              "Description",
               "Start Date",
               "End Date",
               "Status",

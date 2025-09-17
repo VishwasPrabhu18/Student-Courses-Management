@@ -118,13 +118,17 @@ export const getUserDashboardData = async (req, res) => {
       return false;
     }).length;
 
+    const enrollments = await EnrollmentModal.find({ userId })
+      .populate("courseId", "title description") // only bring the course title
+      .select("enrollmentDate endDate status courseId");
+
     return res.status(200).json({
       enrolledCount,
       progressCount,
       completedCount,
       certificateCount,
       overDueCount,
-      courseData: userCourseData,
+      courseData: enrollments,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

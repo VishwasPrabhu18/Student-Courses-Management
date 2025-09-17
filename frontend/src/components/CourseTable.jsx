@@ -1,4 +1,4 @@
-import { formatDate, shortenText } from "../constants/helperMethods";
+import { courseStatus, formatDate, shortenText } from "../constants/helperMethods";
 import { useNavigate } from "react-router-dom";
 import { FiEye } from "react-icons/fi";
 
@@ -23,27 +23,24 @@ const CourseTable = ({ courseData, tableHeaders }) => {
               const encodedId = btoa(c._id);
               return (
                 <tr
-                  key={c.title}
+                  key={c.courseId.title}
                   className={`border-b transition duration-150 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"
                     } hover:bg-gray-100`}
                 >
                   <td className="p-3 font-medium">{idx + 1}</td>
                   <td className="p-3 font-semibold">
-                    {shortenText(c.title, 25)}
+                    {shortenText(c.courseId.title, 25)}
                   </td>
                   <td className="p-3 text-gray-600 truncate max-w-xs">
-                    {shortenText(c.description, 30)}
+                    {shortenText(c.courseId.description, 30)}
                   </td>
                   <td className="p-3">{formatDate(c.enrollmentDate)}</td>
                   <td className="p-3">{formatDate(c.endDate)}</td>
                   <td className="p-3">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${c.isActive
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                        }`}
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${courseStatus(c.status)}`}
                     >
-                      {c.isActive ? "Active" : "Inactive"}
+                      {c.status[0].toUpperCase() + c.status.slice(1).replace("-", " ")}
                     </span>
                   </td>
                   <td className="p-3 flex gap-3">
