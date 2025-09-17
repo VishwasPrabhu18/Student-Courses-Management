@@ -4,12 +4,14 @@ import { FiCheckCircle, FiPlayCircle, FiChevronDown } from "react-icons/fi";
 import axiosConfig from "../../api/axiosConfig";
 import LoadingDots from "../../components/LoadingDots";
 import UserLayout from "./UserLayout";
+import PaymentModal from "../../components/PaymentModal ";
 
 const CourseDetails = () => {
   const { id } = useParams();
   const decodedId = atob(id);
 
   const [expandedSection, setExpandedSection] = useState(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -158,7 +160,9 @@ const CourseDetails = () => {
               </p>
             </div>
 
-            <button className="w-full bg-blue-600 text-white py-3 rounded-lg mb-2 hover:bg-blue-700 shadow-md">
+            <button
+              onClick={() => setPaymentModalOpen(true)}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg mb-2 hover:bg-blue-700 shadow-md">
               Enroll Now
             </button>
             <button className="w-full bg-gray-200 py-3 rounded-lg mb-4 hover:bg-gray-300">
@@ -176,6 +180,8 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
+
+      <PaymentModal isOpen={paymentModalOpen} onClose={() => setPaymentModalOpen(false)} course={courseData} />
     </UserLayout>
   );
 };

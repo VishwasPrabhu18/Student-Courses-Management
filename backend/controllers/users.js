@@ -15,7 +15,9 @@ export const createUser = async (req, res) => {
     );
     const newUser = new UserModel({ ...reqData, password: hashedPassword });
     const userData = await newUser.save();
-    res.status(201).json(userData.replaceOne("-password", ""));
+
+    const { password, ...newData } = userData;
+    res.status(201).json(newData);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -227,6 +229,34 @@ export const getProfileData = async (req, res) => {
         joinedDate: user.createdAt,
         enrollments,
       },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const enrollToCourse = async (req, res) => {
+  const userId = req.user.id;
+  const { courseId } = req.params;
+
+  try {
+    const course = await CoursesModel.findById(courseId);
+    if (!course) res.status(404).json({ message: "Course not found" });
+
+    const startDate = new Date();
+    const endDate = new Date(startDate); // clone current date
+    endDate.setMonth(endDate.getMonth() + course.duration); // add months
+
+    const enrollment = await EnrollmentModal.create({
+      userId,
+      courseId,
+      enrollmentDate: startDate,
+      endDate: endDate,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: enrollment,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

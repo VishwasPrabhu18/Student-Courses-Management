@@ -34,7 +34,7 @@ const CourseTable = ({ courseData, tableHeaders }) => {
                   <td className="p-3 text-gray-600 truncate max-w-xs">
                     {shortenText(c.description, 30)}
                   </td>
-                  <td className="p-3">{formatDate(c.startDate)}</td>
+                  <td className="p-3">{formatDate(c.enrollmentDate)}</td>
                   <td className="p-3">{formatDate(c.endDate)}</td>
                   <td className="p-3">
                     <span

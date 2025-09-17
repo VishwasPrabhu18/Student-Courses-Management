@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FiX, FiCreditCard, FiCheckCircle, FiLoader } from "react-icons/fi";
+import axiosConfig from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 const PaymentModal = ({ isOpen, onClose, course }) => {
   const [cardNumber, setCardNumber] = useState("");
@@ -24,15 +26,31 @@ const PaymentModal = ({ isOpen, onClose, course }) => {
     return "";
   };
 
-  const handlePayNow = () => {
+  const handlePayNow = async () => {
     const err = validateForm();
     if (err) {
       setError(err);
       return;
     }
-    setError("");
-    setStep("processing");
-    setTimeout(() => setStep("success"), 2000); // simulate 2s payment delay
+
+    try {
+      setError("");
+      setStep("processing");
+      const token = localStorage.getItem("token");
+      const res = await axiosConfig.post(`/api/users/enroll/${course._id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 201) {
+        toast.success("You have enrolled to this course successfully");
+        setStep("success");
+      }
+    } catch (error) {
+      console.error(error);
+      setStep("form");
+    }
   };
 
   const resetAndClose = () => {

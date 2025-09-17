@@ -7,6 +7,7 @@ import {
   getAllCoursesData,
   resetUserPassword,
   getProfileData,
+  enrollToCourse,
 } from "../controllers/users.js";
 import authMiddleware from "../middleware/middleware.js";
 
@@ -19,5 +20,6 @@ userRouter.get("/dashboard", authMiddleware, getUserDashboardData);
 userRouter.get("/courses", authMiddleware, getAllCoursesData);
 userRouter.post("/reset-password", authMiddleware, resetUserPassword);
 userRouter.get("/profile", authMiddleware, getProfileData);
+userRouter.post("/enroll/:courseId", authMiddleware, enrollToCourse);
 
 export default userRouter;
