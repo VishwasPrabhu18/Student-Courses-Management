@@ -176,9 +176,6 @@ const CourseDetails = () => {
                 </button>
               )
             }
-            <button className="w-full bg-gray-200 py-3 rounded-lg mb-4 hover:bg-gray-300">
-              Add to Cart
-            </button>
 
             <h3 className="font-semibold mb-2">This course includes:</h3>
             <ul className="text-gray-700 list-disc list-outside pl-6">
