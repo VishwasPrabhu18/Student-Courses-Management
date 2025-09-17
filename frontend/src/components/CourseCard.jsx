@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { getCourseIcon } from "../constants/iconConstants";
+import { LuCircleCheckBig, LuCircleX } from "react-icons/lu";
 
 const CourseCard = ({ cardCourseData }) => {
   return (
@@ -45,12 +46,24 @@ const CourseCard = ({ cardCourseData }) => {
             </div>
 
             {/* CTA Button */}
-            <Link
-              to={`/admin/courses/${encodedId}`}
-              className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors duration-200"
-            >
-              View Course
-            </Link>
+            <div className="flex items-center justify-between w-full">
+              <Link
+                to={`/admin/courses/${encodedId}`}
+                className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors duration-200"
+              >
+                View Course
+              </Link>
+
+              <span>
+                {
+                  course.isActive ? (
+                    <span className="flex items-center gap-2 font-bold text-green-500">Active <LuCircleCheckBig className=" w-6 h-6" /></span>
+                  ) : (
+                    <span className="flex items-center gap-2 font-bold text-red-500">Inactive <LuCircleX className=" w-6 h-6" /></span>
+                  )
+                }
+              </span>
+            </div>
           </div>
         );
       })}
