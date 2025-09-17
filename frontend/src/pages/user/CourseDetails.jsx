@@ -12,6 +12,7 @@ const CourseDetails = () => {
 
   const [expandedSection, setExpandedSection] = useState(null);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
 
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,7 @@ const CourseDetails = () => {
 
         if (res.status === 200) {
           setCourseData(res.data.data);
+          setAlreadyEnrolled(res.data.enrolled);
         }
       } catch (error) {
         console.log("Error fetching course by ID:", error);
@@ -39,7 +41,7 @@ const CourseDetails = () => {
     };
     getCourseById();
   }, []);
-  
+
   if (loading) {
     return (
       <UserLayout>
@@ -87,9 +89,8 @@ const CourseDetails = () => {
                   >
                     {section.section}
                     <FiChevronDown
-                      className={`transform transition-transform ${
-                        expandedSection === i ? "rotate-180" : ""
-                      }`}
+                      className={`transform transition-transform ${expandedSection === i ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
                   {expandedSection === i && (
@@ -160,11 +161,21 @@ const CourseDetails = () => {
               </p>
             </div>
 
-            <button
-              onClick={() => setPaymentModalOpen(true)}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg mb-2 hover:bg-blue-700 shadow-md">
-              Enroll Now
-            </button>
+            {
+              alreadyEnrolled ? (
+                <button
+                  disabled
+                  className="w-full bg-green-600 text-white py-3 rounded-lg mb-2 cursor-default shadow-md">
+                  Already Enrolled
+                </button>
+              ) : (
+                <button
+                  onClick={() => setPaymentModalOpen(true)}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg mb-2 hover:bg-blue-700 shadow-md">
+                  Enroll Now
+                </button>
+              )
+            }
             <button className="w-full bg-gray-200 py-3 rounded-lg mb-4 hover:bg-gray-300">
               Add to Cart
             </button>
@@ -182,7 +193,7 @@ const CourseDetails = () => {
       </div>
 
       <PaymentModal isOpen={paymentModalOpen} onClose={() => setPaymentModalOpen(false)} course={courseData} />
-    </UserLayout>
+    </UserLayout >
   );
 };
 

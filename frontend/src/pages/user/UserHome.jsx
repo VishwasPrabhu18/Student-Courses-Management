@@ -46,8 +46,6 @@ const UserHome = () => {
             overDueCount: data.overDueCount,
           });
           setTableData(data.courseData);
-          console.log(data);
-
         }
       } catch (error) {
         console.log("Dashboard data fetch error: " + error);

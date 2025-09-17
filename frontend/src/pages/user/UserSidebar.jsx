@@ -8,7 +8,7 @@ const UserSidebar = () => {
   const pathname = window.location.pathname;
 
   return (
-    <div className="h-screen fixed w-64 bg-gray-900 text-white flex flex-col hidden md:block">
+    <div className="h-screen fixed w-64 bg-gray-900 text-white flex flex-col">
       <div className="p-6 border-b border-gray-700 mt-16 flex flex-col items-center">
         <div className="w-14 h-14 rounded-full bg-gray-800 p-4 flex items-center justify-center">
           <FaUserAlt className="w-8 h-8" />

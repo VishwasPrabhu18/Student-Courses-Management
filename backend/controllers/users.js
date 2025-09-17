@@ -252,3 +252,23 @@ export const enrollToCourse = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const alreadyEnrolled = async (req, res) => {
+  const userId = req.user.id;
+  const { courseId } = req.params;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
+    const enrollment = await EnrollmentModal.findOne({ userId, courseId });
+    if (enrollment) {
+      return res.status(200).json({ enrolled: true });
+    } else {
+      return res.status(200).json({ enrolled: false });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};

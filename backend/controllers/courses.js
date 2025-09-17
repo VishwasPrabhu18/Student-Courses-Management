@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import CoursesModel from "../models/courses.js";
+import EnrollmentModal from "../models/enrollment.js";
 
 export const getAllCourses = async (req, res) => {
   try {
@@ -34,20 +36,33 @@ export const deleteCourse = async (req, res) => {
 };
 
 export const getCourseById = async (req, res) => {
-  const { id } = req.params;
+  const userId = req.user.id;
+  const { courseId } = req.params;
   try {
-    const course = await CoursesModel.findById(id);
+    const course = await CoursesModel.findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
     let thumbnailBase64 = "";
-    if (course.thumbnail && course.thumbnail.data){
+    if (course.thumbnail && course.thumbnail.data) {
       thumbnailBase64 = `data:${
         course.thumbnail.contentType
       };base64,${course.thumbnail.data.toString("base64")}`;
     }
-    const courseData = {...course._doc, thumbnail: thumbnailBase64};
-    res.status(200).json({message: "Course fetched successfully", data: courseData});
+    const courseData = { ...course._doc, thumbnail: thumbnailBase64 };
+
+    const enrollment = await EnrollmentModal.findOne({ userId, courseId });
+
+    res
+      .status(200)
+      .json({
+        message: "Course fetched successfully",
+        data: courseData,
+        enrolled: !!enrollment,
+      });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -66,12 +81,12 @@ export const updateCourse = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
     let thumbnailBase64 = "";
-    if (updatedCourse.thumbnail && updatedCourse.thumbnail.data){
+    if (updatedCourse.thumbnail && updatedCourse.thumbnail.data) {
       thumbnailBase64 = `data:${
         updatedCourse.thumbnail.contentType
       };base64,${updatedCourse.thumbnail.data.toString("base64")}`;
     }
-    const courseData = {...updatedCourse._doc, thumbnail: thumbnailBase64};
+    const courseData = { ...updatedCourse._doc, thumbnail: thumbnailBase64 };
     res.status(200).json(courseData);
   } catch (error) {
     res.status(500).json({ message: error.message });
