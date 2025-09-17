@@ -44,7 +44,7 @@ const UserHome = () => {
           });
           setTableData(data.courseData);
           console.log(data);
-          
+
         }
       } catch (error) {
         console.log("Dashboard data fetch error: " + error);
@@ -70,14 +70,14 @@ const UserHome = () => {
             value={stats.enrolledCount}
           />
           <UserDashboardCard
-            icon={<FaCheckCircle className="text-green-600 text-3xl" />}
-            label="Completed Courses"
-            value={stats.completedCount}
-          />
-          <UserDashboardCard
             icon={<FaHourglassHalf className="text-yellow-500 text-3xl" />}
             label="In Progress Courses"
             value={stats.progressCount}
+          />
+          <UserDashboardCard
+            icon={<FaCheckCircle className="text-green-600 text-3xl" />}
+            label="Completed Courses"
+            value={stats.completedCount}
           />
           <UserDashboardCard
             icon={<FaRegClock className="text-purple-600 text-3xl" />}
