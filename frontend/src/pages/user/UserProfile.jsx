@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import UserLayout from "./UserLayout";
 import axiosConfig from "../../api/axiosConfig";
-import { formatDate } from "../../constants/helperMethods";
+import { courseStatus, formatDate } from "../../constants/helperMethods";
 import AvatarUpload from "../../components/AvatarUpload";
 import { toast } from "react-toastify";
+import LoadingDots from "../../components/LoadingDots";
 
 const UserProfile = () => {
   const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const hanldeFileUpload = async (file) => {
     try {
@@ -35,6 +37,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("token");
         if (!token) return;
         const res = await axiosConfig.get("/api/users/profile", {
@@ -48,10 +51,20 @@ const UserProfile = () => {
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchProfileData();
   }, []);
+
+  if (loading) {
+    return (
+      <UserLayout>
+        <LoadingDots />
+      </UserLayout>
+    );
+  }
 
   return (
     <UserLayout>
@@ -86,19 +99,19 @@ const UserProfile = () => {
         {/* Enrolled Courses */}
         <h2 className="text-xl font-semibold mt-8 mb-4">Enrolled Courses ({profileData?.enrollments.length})</h2>
         <ul className="space-y-3">
-          {profileData?.enrollments.map((course) => (
+          {profileData?.enrollments.map((course, idx) => (
             <li
-              key={course.title}
+              key={course.courseId.title}
               className="flex justify-between p-3 border rounded-lg hover:bg-gray-50"
             >
-              <span>{course.name}</span>
+              <div className="flex items-center gap-2">
+                <span>{idx + 1}.</span>
+                <span>{course.courseId.title}</span>
+              </div>
               <span
-                className={`px-2 py-1 text-xs rounded-full ${course.status === "Active"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-200 text-gray-700"
-                  }`}
+                className={`px-2 py-1 text-xs rounded-full ${courseStatus(course.status)}`}
               >
-                {course.status}
+                {course.status[0].toUpperCase() + course.status.slice(1).replace("-", " ")}
               </span>
             </li>
           ))}

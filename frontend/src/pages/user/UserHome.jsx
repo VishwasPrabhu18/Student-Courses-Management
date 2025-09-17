@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import axiosConfig from "../../api/axiosConfig";
 import UserDashboardCard from "../../components/UserDashboardCard";
 import CourseTable from "../../components/CourseTable";
+import LoadingDots from "../../components/LoadingDots";
 
 const UserHome = () => {
   const { user } = useUser();
@@ -22,9 +23,11 @@ const UserHome = () => {
     certificateCount: 0,
   });
   const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
       const token = localStorage.getItem("token");
       try {
         const res = await axiosConfig.get("/api/users/dashboard", {
@@ -48,11 +51,21 @@ const UserHome = () => {
         }
       } catch (error) {
         console.log("Dashboard data fetch error: " + error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDashboardData();
   }, []);
+
+  if (loading) {
+    return (
+      <UserLayout>
+        <LoadingDots />
+      </UserLayout>
+    );
+  }
 
   return (
     <UserLayout>

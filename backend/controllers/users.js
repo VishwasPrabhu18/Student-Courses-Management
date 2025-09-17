@@ -196,24 +196,10 @@ export const getProfileData = async (req, res) => {
   try {
     const user = await UserModel.findById(id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
-    const enrollments = await EnrollmentModal.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(id) } },
-      {
-        $lookup: {
-          from: "Course", // collection name in DB
-          localField: "courseId",
-          foreignField: "_id",
-          as: "courseDetails",
-        },
-      },
-      { $unwind: "$courseDetails" },
-      {
-        $project: {
-          status: 1,
-          "courseDetails.title": 1,
-        },
-      },
-    ]);
+
+    const enrollments = await EnrollmentModal.find({ userId: id })
+      .populate("courseId", "title description") // only bring the course title
+      .select("enrollmentDate endDate status courseId");
 
     let profilePicBase64 = null;
     if (user.profilePic) {
