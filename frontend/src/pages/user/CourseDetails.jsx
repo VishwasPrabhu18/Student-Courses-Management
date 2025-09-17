@@ -1,10 +1,11 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FiCheckCircle, FiPlayCircle, FiChevronDown } from "react-icons/fi";
 import axiosConfig from "../../api/axiosConfig";
 import LoadingDots from "../../components/LoadingDots";
 import UserLayout from "./UserLayout";
 import PaymentModal from "../../components/PaymentModal ";
+import { FaArrowLeft } from "react-icons/fa";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -54,9 +55,15 @@ const CourseDetails = () => {
     <UserLayout>
       <div className="bg-gray-50 min-h-screen">
         <div className="px-6 py-6 border-b bg-white shadow-sm">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-900">
             {courseData.title}
-          </h1>
+            </h1>
+            <Link to="/user/courses" className="flex items-center gap-3 bg-blue-400 text-white px-4 py-2 rounded-lg hover:bg-blue-500">
+              <FaArrowLeft />
+              <span>Back to Courses</span>
+            </Link>
+          </div>
           <p className="text-lg text-gray-700 mt-2">{courseData.description}</p>
         </div>
 

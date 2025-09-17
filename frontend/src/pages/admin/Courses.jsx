@@ -6,13 +6,14 @@ import { toast } from "react-toastify";
 import AccessDeniedCard from "../../components/AccessDeniedCard";
 import CourseCard from "../../components/CourseCard";
 import CourseTable from "../../components/CourseTable";
+import LoadingDots from "../../components/LoadingDots";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [tableCourseData, setTableCourseData] = useState([]);
   const [cardCourseData, setCardCourseData] = useState([]);
-
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const splitData = (data) => {
     if (!data || data.length === 0) return;
@@ -53,6 +54,7 @@ const Courses = () => {
   useEffect(() => {
     const getAllCourses = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("token");
         const res = await axiosConfig.get("/api/courses", {
           headers: {
@@ -61,6 +63,8 @@ const Courses = () => {
         });
 
         if (res.status === 200) {
+          console.log(res.data);
+          
           setCourses(res.data);
           splitData(res.data);
         } else if (res.status === 401) {
@@ -68,10 +72,20 @@ const Courses = () => {
         }
       } catch (error) {
         console.log("Error fetching courses:", error);
+      } finally {
+        setLoading(false);
       }
     };
     getAllCourses();
   }, []);
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <LoadingDots />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

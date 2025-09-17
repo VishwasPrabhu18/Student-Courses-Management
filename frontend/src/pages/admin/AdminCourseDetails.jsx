@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosConfig from "../../api/axiosConfig";
 import AdminLayout from "./AdminLayout";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa";
 import { getCourseIcon } from "../../constants/iconConstants";
 import LoadingDots from "../../components/LoadingDots";
 import CourseModal from "../../components/CourseModal";
@@ -125,31 +125,37 @@ const AdminCourseDetails = () => {
     <AdminLayout>
       <div className="p-6 space-y-6">
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3">
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow"
-            onClick={handleEditClick}
-          >
-            <FaEdit /> Edit
-          </button>
-          <button
-            onClick={() =>
-              setDeleteOpen({
-                isOpen: true,
-                title: "Confirm Deletion",
-                message:
-                  "Are you sure you want to delete this course?",
-                icon: <FiTrash2 size={18} />,
-                bgClassName: "bg-red-100 text-red-700",
-                iconBg: "bg-red-200 text-red-800",
-                cardBg: "bg-red-50",
-                btnBg: "bg-red-600 hover:bg-red-700 text-white",
-                courseId: decodedId,
-              })
-            }
-            className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow">
-            <FaTrash /> Delete
-          </button>
+        <div className="w-full flex items-center justify-between">
+          <Link to="/admin/courses" className="flex items-center gap-3 bg-blue-400 text-white px-4 py-2 rounded-lg hover:bg-blue-500">
+            <FaArrowLeft />
+            <span>Back to Courses</span>
+          </Link>
+          <div className="flex justify-end gap-3">
+            <button
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow"
+              onClick={handleEditClick}
+            >
+              <FaEdit /> Edit
+            </button>
+            <button
+              onClick={() =>
+                setDeleteOpen({
+                  isOpen: true,
+                  title: "Confirm Deletion",
+                  message:
+                    "Are you sure you want to delete this course?",
+                  icon: <FiTrash2 size={18} />,
+                  bgClassName: "bg-red-100 text-red-700",
+                  iconBg: "bg-red-200 text-red-800",
+                  cardBg: "bg-red-50",
+                  btnBg: "bg-red-600 hover:bg-red-700 text-white",
+                  courseId: decodedId,
+                })
+              }
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow">
+              <FaTrash /> Delete
+            </button>
+          </div>
         </div>
 
         {/* Course Header */}

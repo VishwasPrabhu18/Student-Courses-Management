@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import axiosConfig from "../../api/axiosConfig";
+import LoadingDots from "../../components/LoadingDots";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const usersPerPage = 5;
 
   // Pagination logic
@@ -18,6 +20,7 @@ const UsersList = () => {
   useEffect(() => {
     const getAllStudents = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("token");
         const res = await axiosConfig.get("/api/admin/students", {
           headers: {
@@ -27,11 +30,21 @@ const UsersList = () => {
         setUsers(res.data);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     getAllStudents();
   }, []);
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <LoadingDots />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

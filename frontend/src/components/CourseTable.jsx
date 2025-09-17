@@ -4,6 +4,8 @@ import { FiEye } from "react-icons/fi";
 
 const CourseTable = ({ courseData, tableHeaders }) => {
   const navigate = useNavigate();
+  console.log(courseData);
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
       <table className="w-full border-collapse text-sm">
@@ -21,27 +23,37 @@ const CourseTable = ({ courseData, tableHeaders }) => {
           {courseData.length > 0 ? (
             courseData.map((c, idx) => {
               const encodedId = btoa(c._id);
+              const title = c.courseId?.title || c.title;
+              const description = c.courseId?.description || c.description;
               return (
                 <tr
-                  key={c.courseId.title}
+                  key={title}
                   className={`border-b transition duration-150 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"
                     } hover:bg-gray-100`}
                 >
                   <td className="p-3 font-medium">{idx + 1}</td>
                   <td className="p-3 font-semibold">
-                    {shortenText(c.courseId.title, 25)}
+                    {shortenText(title, 25)}
                   </td>
                   <td className="p-3 text-gray-600 truncate max-w-xs">
-                    {shortenText(c.courseId.description, 30)}
+                    {shortenText(description, 30)}
                   </td>
                   <td className="p-3">{formatDate(c.enrollmentDate)}</td>
                   <td className="p-3">{formatDate(c.endDate)}</td>
                   <td className="p-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${courseStatus(c.status)}`}
-                    >
-                      {c.status[0].toUpperCase() + c.status.slice(1).replace("-", " ")}
-                    </span>
+                    {
+                      c.status ? (
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${courseStatus(c.status)}`}
+                        >
+                          {c.status[0].toUpperCase() + c.status.slice(1).replace("-", " ")}
+                        </span>
+                      ) : (
+                        <span className={`px-8 py-2 rounded-full text-sm font-medium ${c.isActive ? "bg-green-500 text-white" : "bg-red-100 text-red-800"}`}>
+                          {c.isActive ? "Active" : "Inactive"}
+                        </span>
+                      )
+                    }
                   </td>
                   <td className="p-3 flex gap-3">
                     <button
