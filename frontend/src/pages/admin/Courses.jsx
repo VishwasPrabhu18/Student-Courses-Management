@@ -108,10 +108,10 @@ const Courses = () => {
           tableHeaders={[
             "#",
             "Course Name",
-            "Status",
+            "Decription",
             "Start Date",
             "End Date",
-            "Actions",
+            "Status",
           ]}
         />
       )}

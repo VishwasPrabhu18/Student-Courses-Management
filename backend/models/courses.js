@@ -68,6 +68,7 @@ const courseSchema = new mongoose.Schema(
             duration: { type: String, default: "" },
           },
         ],
+        videoUrl: { type: String, default: "" },
       },
     ],
     requirements: [

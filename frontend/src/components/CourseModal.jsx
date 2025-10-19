@@ -34,7 +34,7 @@ const CourseModal = ({
     whatYouLearn: [""],
     requirements: [""],
     highlights: [""],
-    courseContent: [{ section: "", lectures: [{ title: "", duration: "" }] }],
+    courseContent: [{ section: "", lectures: [{ title: "", duration: "" }], videoUrl: "" }],
   });
 
   useEffect(() => {
@@ -62,6 +62,12 @@ const CourseModal = ({
     setFormData((prev) => ({ ...prev, courseContent: updated }));
   };
 
+  const handleVideoUrlChange = (index, value) => {
+    const updated = [...formData.courseContent];
+    updated[index].videoUrl = value;
+    setFormData((prev) => ({ ...prev, courseContent: updated }));
+  };
+
   const handleLectureChange = (sectionIndex, lectureIndex, field, value) => {
     const updated = [...formData.courseContent];
     updated[sectionIndex].lectures[lectureIndex][field] = value;
@@ -73,7 +79,7 @@ const CourseModal = ({
       ...prev,
       courseContent: [
         ...prev.courseContent,
-        { section: "", lectures: [{ title: "", duration: "" }] },
+        { section: "", lectures: [{ title: "", duration: "" }], videoUrl: "" },
       ],
     }));
   };
@@ -125,7 +131,7 @@ const CourseModal = ({
       whatYouLearn: [""],
       requirements: [""],
       highlights: [""],
-      courseContent: [{ section: "", lectures: [{ title: "", duration: "" }] }],
+      courseContent: [{ section: "", lectures: [{ title: "", duration: "" }], videoUrl: "" }],
     });
     onClose();
   };
@@ -351,6 +357,19 @@ const CourseModal = ({
                         <FaTrash />
                       </button>
                     </div>
+                     <div className="col-span-3">
+                        <CustomInput
+                          type="url"
+                          label={`Lecture ${sectionIndex + 1} Video Url`}
+                          value={section.videoUrl}
+                          onChange={(value) =>
+                            handleVideoUrlChange(
+                              sectionIndex,
+                              value
+                            )
+                          }
+                        />
+                      </div>
                     {section.lectures.map((lecture, lectureIndex) => (
                       <div
                         key={lectureIndex}
