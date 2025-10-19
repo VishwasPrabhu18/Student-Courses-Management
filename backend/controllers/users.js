@@ -67,16 +67,6 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// export const validateJWT = async (req, res) => {
-//   const { token } = req.body;
-
-//   try {
-
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error: error.message });
-//   }
-// }
-
 export const getUserByToken = async (req, res) => {
   try {
     const user = await UserModel.findById(req.user.id).select("-password");
@@ -235,13 +225,14 @@ export const enrollToCourse = async (req, res) => {
 
     const startDate = new Date();
     const endDate = new Date(startDate); // clone current date
-    endDate.setMonth(endDate.getMonth() + course.duration); // add months
+    endDate.setDate(endDate.getDate() + course.duration * 7); // add days
 
     const enrollment = await EnrollmentModal.create({
       userId,
       courseId,
       enrollmentDate: startDate,
       endDate: endDate,
+      lectureInProgress: course.courseContent
     });
 
     res.status(201).json({
@@ -270,5 +261,23 @@ export const alreadyEnrolled = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getEnrollmentDetails = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const { enrollmentId } = req.params;
+
+    const enrollment = await EnrollmentModal.findById(enrollmentId);
+    const course = await CoursesModel.findById(enrollment?.courseId);
+
+    if (!enrollment || !course) {
+      return res.status(404).json({ message: !enrollment ? "Enrollment not found" : "Course not found" });
+    }
+
+    res.json({ course, enrollment });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

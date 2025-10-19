@@ -63,8 +63,6 @@ const Courses = () => {
         });
 
         if (res.status === 200) {
-          console.log(res.data);
-          
           setCourses(res.data);
           splitData(res.data);
         } else if (res.status === 401) {

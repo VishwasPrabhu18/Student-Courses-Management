@@ -4,7 +4,6 @@ import { FiEye } from "react-icons/fi";
 
 const CourseTable = ({ courseData, tableHeaders }) => {
   const navigate = useNavigate();
-  console.log(courseData);
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">

@@ -33,6 +33,8 @@ const PaymentModal = ({ isOpen, onClose, course }) => {
       return;
     }
 
+
+    // TODO: Add the lectureInProgress Data by default from course
     try {
       setError("");
       setStep("processing");
@@ -46,6 +48,7 @@ const PaymentModal = ({ isOpen, onClose, course }) => {
       if (res.status === 201) {
         toast.success("You have enrolled to this course successfully");
         setStep("success");
+        window.location.reload();
       }
     } catch (error) {
       console.error(error);

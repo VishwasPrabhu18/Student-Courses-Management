@@ -7,55 +7,14 @@ import {
   FaRegClock,
 } from "react-icons/fa";
 import { useUser } from "../../context/UserContext";
-import { useEffect, useState } from "react";
-import axiosConfig from "../../api/axiosConfig";
 import UserDashboardCard from "../../components/UserDashboardCard";
 import CourseTable from "../../components/CourseTable";
 import LoadingDots from "../../components/LoadingDots";
+import { useUserData } from "../../context/UserDataContext";
 
 const UserHome = () => {
   const { user } = useUser();
-  const [stats, setStats] = useState({
-    enrolledCount: 0,
-    progressCount: 0,
-    completedCount: 0,
-    overDueCount: 0,
-    certificateCount: 0,
-  });
-  const [tableData, setTableData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      try {
-        const res = await axiosConfig.get("/api/users/dashboard", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (res.status === 200) {
-          const data = res.data;
-          setStats({
-            enrolledCount: data.enrolledCount,
-            progressCount: data.progressCount,
-            completedCount: data.completedCount,
-            certificateCount: data.certificateCount,
-            overDueCount: data.overDueCount,
-          });
-          setTableData(data.courseData);
-        }
-      } catch (error) {
-        console.log("Dashboard data fetch error: " + error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+  const { stats, tableData, loading } = useUserData();
 
   if (loading) {
     return (

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosConfig from "../../api/axiosConfig";
 import AdminLayout from "./AdminLayout";
-import { FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaTrash, FaUserAlt } from "react-icons/fa";
 import { getCourseIcon } from "../../constants/iconConstants";
 import LoadingDots from "../../components/LoadingDots";
 import CourseModal from "../../components/CourseModal";
@@ -131,6 +131,10 @@ const AdminCourseDetails = () => {
             <span>Back to Courses</span>
           </Link>
           <div className="flex justify-end gap-3">
+            <Link to={`/admin/courses/${id}/users`} className="flex items-center gap-3 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600">
+              <FaUserAlt />
+              <span>Enrolled User</span>
+            </Link>
             <button
               className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow"
               onClick={handleEditClick}

@@ -28,7 +28,7 @@ export const UserProvider = ({ children }) => {
         setTimeout(() => {
           localStorage.removeItem("token");
           window.location.href = "/login";
-        }, 3000);
+        }, 2000);
       } else {
         setError({ status: 500, message: "Server error" });
       }

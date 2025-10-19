@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
 import UserLayout from "./UserLayout";
 import CustomInput from "../../components/CustomInput";
 import SearchCourseResults from "../../components/SearchCourseResult";
 import axiosConfig from "../../api/axiosConfig";
+import LoadingDots from "../../components/LoadingDots";
+import { useUserData } from "../../context/UserDataContext";
 
 const UserCourses = () => {
-  const [search, setSearch] = useState("");
-  const [courseData, setCourseData] = useState([]);
+  const { courseData, setCourseData, loading, setLoading, search, setSearch } = useUserData();
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await axiosConfig.get(`/api/users/courses?search=${search}`, {
         headers: {
@@ -17,29 +18,20 @@ const UserCourses = () => {
         },
       });
       setCourseData(res.data);
-     } catch (error) {
+    } catch (error) {
       console.error("Error during search:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
-  useEffect(() => {
-    const getCourses = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      try {
-        const response = await axiosConfig.get("/api/users/courses", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.data;
-        setCourseData(data);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
-    getCourses();
-  }, []);
+  if (loading) {
+    return (
+      <UserLayout>
+        <LoadingDots />
+      </UserLayout>
+    );
+  }
 
   return (
     <UserLayout>

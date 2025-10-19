@@ -27,6 +27,17 @@ const enrollmentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    lectureInProgress: [
+      {
+        section: { type: String, default: "" },
+        lectures: [
+          {
+            title: { type: String, default: "" },
+            duration: { type: String, default: "" },
+          },
+        ],
+      },
+    ],
     completedLectures: [
       {
         section: { type: String },

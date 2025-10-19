@@ -2,18 +2,22 @@ import { Link } from "react-router-dom";
 import { FaSignOutAlt, FaUserAlt } from "react-icons/fa";
 import { UserSidebarLinks } from "../../constants/constants";
 import { useUser } from "../../context/UserContext";
+import { useUserData } from "../../context/UserDataContext";
 
 const UserSidebar = () => {
-  const { user, handleLogout } = useUser();
+  const { handleLogout } = useUser();
+  const { profileData } = useUserData();
   const pathname = window.location.pathname;
 
   return (
     <div className="h-screen fixed w-64 bg-gray-900 text-white flex flex-col">
       <div className="p-6 border-b border-gray-700 mt-16 flex flex-col items-center">
-        <div className="w-14 h-14 rounded-full bg-gray-800 p-4 flex items-center justify-center">
-          <FaUserAlt className="w-8 h-8" />
+        <div className={`w-14 h-14 rounded-full bg-gray-800 ${profileData?.profilePic ? "" : "p-4"} flex items-center justify-center`}>
+          {
+            profileData?.profilePic ? <img src={profileData.profilePic} alt="Profile" className="w-full h-full rounded-full object-cover" /> : <FaUserAlt className="w-6 h-6 text-gray-400" />
+          }
         </div>
-        <h2 className="text-center text-xl font-bold">{ user?.firstName && user?.firstName + " " + user?.lastName}</h2>
+        <h2 className="text-center text-xl font-bold">{ profileData?.firstName && profileData?.firstName + " " + profileData?.lastName}</h2>
       </div>
 
       <nav className="flex-1 p-4 space-y-3">

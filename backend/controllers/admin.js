@@ -1,3 +1,4 @@
+import EnrollmentModal from "../models/enrollment.js";
 import UserModel from "../models/users.js";
 
 export const getUsers = async (req, res) => {
@@ -28,3 +29,15 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+export const getUsersByCourseId = async (req, res) => {
+  const { courseId } = req.params;
+  try {
+    const enrolledUser = await EnrollmentModal
+      .find({ courseId })
+      .populate("userId", "firstName lastName email phoneNumber")
+      .select("userId enrollmentDate status progress lastAccessed");
+    res.status(200).json(enrolledUser);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};

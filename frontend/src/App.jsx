@@ -17,6 +17,8 @@ import CourseDetails from "./pages/user/CourseDetails";
 import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminCourseDetails from "./pages/admin/AdminCourseDetails";
+import EnrolledCourseDetails from "./pages/user/EnrolledCourseDetails";
+import EnrolledUsers from "./pages/admin/EnrolledUsers";
 
 function App() {
   return (
@@ -24,7 +26,7 @@ function App() {
       <Navbar />
       <ToastContainer
         position="bottom-right"
-        autoClose={3000}
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop
         closeOnClick={false}
@@ -47,6 +49,7 @@ function App() {
         <Route path="/admin/users" element={<UsersList />} />
         <Route path="/admin/courses" element={<Courses />} />
         <Route path="/admin/courses/:id" element={<AdminCourseDetails />} />
+        <Route path="/admin/courses/:id/users" element={<EnrolledUsers />} />
 
         {/* User Routes */}
         <Route path="/user" element={<UserHome />} />
@@ -54,6 +57,7 @@ function App() {
         <Route path="/user/courses" element={<UserCourses />} />
         <Route path="/user/courses/:id" element={<CourseDetails />} />
         <Route path="/user/settings" element={<UserSettings />} />
+        <Route path="/user/enroll/:enrollmentId" element={<EnrolledCourseDetails />} />
       </Routes>
       <Footer />
     </Router>

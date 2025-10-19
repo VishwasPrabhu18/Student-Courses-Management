@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
 import UserLayout from "./UserLayout";
 import axiosConfig from "../../api/axiosConfig";
 import { courseStatus, formatDate } from "../../constants/helperMethods";
 import AvatarUpload from "../../components/AvatarUpload";
 import { toast } from "react-toastify";
 import LoadingDots from "../../components/LoadingDots";
+import { useUserData } from "../../context/UserDataContext";
 
 const UserProfile = () => {
-  const [profileData, setProfileData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { profileData, setProfileData, loading } = useUserData();
 
   const hanldeFileUpload = async (file) => {
     try {
@@ -33,30 +32,6 @@ const UserProfile = () => {
       toast.error("Failed to update profile picture.");
     }
   }
-
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        const res = await axiosConfig.get("/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (res.status === 200) {
-          setProfileData(res.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProfileData();
-  }, []);
 
   if (loading) {
     return (
