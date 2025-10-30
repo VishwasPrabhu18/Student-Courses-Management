@@ -8,9 +8,9 @@ import {
 } from "react-icons/fa";
 import { useUser } from "../../context/UserContext";
 import UserDashboardCard from "../../components/UserDashboardCard";
-import CourseTable from "../../components/CourseTable";
 import LoadingDots from "../../components/LoadingDots";
 import { useUserData } from "../../context/UserDataContext";
+import UserCourseTable from "../../components/userComp/UserCourseTable";
 
 const UserHome = () => {
   const { user } = useUser();
@@ -62,7 +62,7 @@ const UserHome = () => {
         </div>
 
         {tableData.length > 0 && (
-          <CourseTable
+          <UserCourseTable
             courseData={tableData}
             tableHeaders={[
               "#",

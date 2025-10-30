@@ -1,95 +1,139 @@
 import { useState, useEffect } from "react";
-import { Play, Pause, History } from "lucide-react";
+import ReactPlayer from "react-player";
+import { Check, CheckCircle2 } from "lucide-react";
+import { FaCheck, FaCheckCircle } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-toastify";
+import axiosConfig from "../../api/axiosConfig";
 
-const LecturePlayer = ({ lecture }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [time, setTime] = useState(0);
+const LecturePlayer = ({ lecture, vedioCompleted, courseId }) => {
+  const [duration, setDuration] = useState(0);
+  const [completed, setCompleted] = useState(false);
+  const [started, setStarted] = useState(false);
+  console.log(lecture);
+
 
   useEffect(() => {
-    setTime(0);
-    setIsPlaying(false);
+    setCompleted(false);
+    setDuration(0);
   }, [lecture]);
 
-  let duration = 60;
-  if (lecture.duration.includes("hr")) {
-    duration = parseInt(lecture.duration) * 3600;
-  } else if (lecture.duration.includes("m")) {
-    duration = parseInt(lecture.duration) * 60;
-  } else {
-    duration = parseInt(lecture.duration) || 60;
-  }
+  const handleEnded = () => {
+    setCompleted(true);
+    vedioCompleted(true);
+  };
 
-  useEffect(() => {
-    let timer;
-    if (isPlaying && time < duration) {
-      timer = setInterval(() => {
-        setTime((prev) => Math.min(prev + 1, duration));
-      }, 1000);
+  const handleStart = () => {
+    setStarted(true);
+  };
+
+  const handleCompleteLecture = async () => {
+    if (!completed) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await axiosConfig.put(`/api/users/lecture-complete/${courseId}`,
+        {
+          lectureId: lecture._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        });
+      if (res.status === 200) {
+        toast.success(`Lecture "${lecture.title}" marked as completed!`);
+      }
+    } catch (error) {
+      console.error("Error marking lecture as completed:", error);
     }
-    return () => clearInterval(timer);
-  }, [isPlaying, time, duration]);
-
-  const togglePlay = () => setIsPlaying((prev) => !prev);
-  const forward = () => setTime((t) => Math.min(t + 10, duration));
-  const backward = () => setTime((t) => Math.max(t - 10, 0));
-
-  const progress = (time / duration) * 100;
+  }
 
   return (
     <div className="flex-1 p-6">
-      <h2 className="text-xl font-bold">{lecture.title}</h2>
-      <p className="text-gray-600 mb-4">Duration: {lecture.duration}</p>
+      <h2 className="text-xl font-bold mb-2">{lecture.title}</h2>
 
-      {/* Video Placeholder */}
-      <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg mb-4 relative overflow-hidden">
-        {isPlaying && (
-          <div className="absolute w-32 h-32 bg-blue-400/30 rounded-full animate-ping" />
-        )}
+      {
+        lecture.videoUrl ? (
+          <>
+            <div className="w-full h-96 bg-gray-200 rounded-lg overflow-hidden mb-4">
+              <ReactPlayer
+                src={lecture.videoUrl}
+                width="100%"
+                height="100%"
+                controls={false}
+                onDurationChange={(d) => setDuration(d.target.duration)}
+                onEnded={handleEnded}
+                onStart={handleStart}
+              />
+            </div>
 
-        <div
-          className="relative z-10 flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-md cursor-pointer hover:scale-105 transition"
-          onClick={togglePlay}
-        >
-          {isPlaying ? (
-            <Pause className="w-10 h-10 text-blue-600" />
+            <div className="flex items-center justify-between">
+              <p className="text-gray-600">
+                Duration: {duration ? Math.floor(duration / 60) + " min" : "Loading..."}
+              </p>
+
+              {completed ? (
+                <button
+                  disabled
+                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg cursor-default"
+                >
+                  <CheckCircle2 className="w-5 h-5" /> Completed
+                </button>
+              ) : started ? (
+                <button
+                  className={`px-4 py-2 rounded-lg text-white transition ${started
+                    ? "bg-yellow-600 hover:bg-yellow-700"
+                    : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                  disabled={!started}
+                >
+                  In Progress
+                </button>
+              ) : (
+                <button
+                  className={`px-4 py-2 rounded-lg text-white transition ${completed
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                  disabled={!completed}
+                >
+                  Paused
+                </button>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="w-full h-80 flex items-center justify-center bg-gray-200 text-gray-500 rounded-lg">
+            Video not available
+          </div>
+        )
+      }
+      <div className="my-4 w-full flex items-center justify-center">
+        {
+          lecture.isDone ? (
+            <button
+              className="px-7 py-3 rounded bg-green-600 text-white hover:bg-green-700 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5" />
+                Completed
+              </span>
+            </button>
           ) : (
-            <Play className="w-10 h-10 text-blue-600" />
-          )}
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex justify-center items-center space-x-4 mb-4">
-        <button
-          onClick={backward}
-          className="p-2 rounded bg-gray-200 hover:bg-gray-300"
-        >
-          <History className="w-5 h-5 text-gray-700" />
-        </button>
-        <button
-          onClick={togglePlay}
-          className="p-3 rounded bg-blue-600 text-white flex items-center justify-center"
-        >
-          {isPlaying ? (
-            <Pause className="w-6 h-6" />
-          ) : (
-            <Play className="w-6 h-6" />
-          )}
-        </button>
-        <button
-          onClick={forward}
-          className="p-2 rounded bg-gray-200 hover:bg-gray-300"
-        >
-          <History className="w-5 h-5 text-gray-700 transform -scale-x-100" />
-        </button>
-      </div>
-
-      {/* Progress bar */}
-      <div className="w-full bg-gray-300 h-2 rounded">
-        <div
-          className="bg-blue-600 h-2 rounded transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
+            <button
+              className={`px-7 py-3 rounded ${completed ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 cursor-not-allowed text-gray-400"} transition-colors`}
+              disabled={!completed}
+              onClick={handleCompleteLecture}
+            >
+              <span className="flex items-center gap-2">
+                <Check className="w-5 h-5" />
+                Mark as Completed
+              </span>
+            </button>
+          )
+        }
       </div>
     </div>
   );

@@ -3,11 +3,10 @@ import axios from "axios";
 import CourseSidebar from "../../components/userComp/CourseSidebar";
 import ProgressBar from "../../components/userComp/ProgressBar";
 import LecturePlayer from "../../components/userComp/LecturePlayer";
-import NotesPanel from "../../components/userComp/NotesPanel";
 import UserLayout from "./UserLayout";
 import axiosConfig from "../../api/axiosConfig";
 import { useParams } from "react-router-dom";
-import { FaAnglesLeft } from "react-icons/fa6";
+import { FaAnglesRight } from "react-icons/fa6";
 
 const EnrolledCourseDetails = () => {
   const { enrollmentId } = useParams();
@@ -19,7 +18,6 @@ const EnrolledCourseDetails = () => {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // ✅ Fetch course + enrollment
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,7 +30,7 @@ const EnrolledCourseDetails = () => {
 
         setCourse(data?.data.course);
         setEnrollment(data?.data.enrollment);
-        setCurrentLecture(data?.data.course?.courseContent[0].lectures[0]);
+        setCurrentLecture(data?.data.enrollment?.lectureInProgress[0].lectures[0]);
       } catch (err) {
         console.error(err);
         setError("Failed to load course details.");
@@ -146,7 +144,7 @@ const EnrolledCourseDetails = () => {
                 className="hover:bg-slate-200 w-10 h-10 p-2 flex items-center justify-center rounded-full cursor-pointer"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
-                <FaAnglesLeft className={`transition-transform duration-300 ${sidebarOpen ? "rotate-180" : ""}`} />
+                <FaAnglesRight className={`transition-transform duration-300 ${sidebarOpen ? "rotate-180" : ""}`} />
               </div>
             </div>
             <p className="text-gray-600">
@@ -159,60 +157,8 @@ const EnrolledCourseDetails = () => {
           <div className="flex-1 overflow-y-auto">
             <LecturePlayer
               lecture={currentLecture}
-              // progress={enrollment.lectureInProgress[currentLecture.id] || 0}
-              // onProgressChange={(p) =>
-              //   handleProgressUpdate(currentLecture.id, p)
-              // }
+              courseId={course?._id}
             />
-
-            {/* Notes */}
-            <NotesPanel
-              lecture={currentLecture}
-              notes={enrollment.notes.filter(
-                (n) => n.lectureId === currentLecture.id
-              )}
-              onAddNote={addNote}
-            />
-          </div>
-
-          {/* Bottom Controls */}
-          <div className="p-4 border-t bg-white shadow-sm flex justify-between">
-            <button
-              onClick={goToPrevLecture}
-              disabled={allLectures[0].id === currentLecture.id}
-              className="px-4 py-2 rounded bg-gray-200 disabled:opacity-50"
-            >
-              Previous
-            </button>
-
-            {enrollment.completedLectures.includes(currentLecture.id) ? (
-              <button
-                disabled
-                className="px-6 py-2 rounded bg-green-500 text-white cursor-not-allowed"
-              >
-                Completed
-              </button>
-            ) : (
-              <button
-                onClick={() => markComplete(currentLecture.id)}
-                disabled={
-                  (enrollment.completedLectures[currentLecture.id] || 0) < 100
-                }
-                className="px-6 py-2 rounded bg-blue-600 text-white disabled:bg-gray-400"
-              >
-                Mark as Complete
-              </button>
-            )}
-
-            <button
-              onClick={goToNextLecture}
-              disabled={
-                allLectures[allLectures.length - 1].id === currentLecture.id
-              }
-              className="px-4 py-2 rounded bg-gray-200 disabled:opacity-50"
-            >
-              Next
-            </button>
           </div>
         </div>
       </div>

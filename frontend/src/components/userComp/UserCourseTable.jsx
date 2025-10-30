@@ -1,0 +1,81 @@
+import { useNavigate } from "react-router-dom";
+import { FiEye } from "react-icons/fi";
+import { courseStatus, formatDate, shortenText } from "../../constants/helperMethods";
+
+const UserCourseTable = ({ courseData, tableHeaders }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className="bg-gradient-to-r from-blue-100 to-blue-200 text-left text-gray-700 uppercase text-xs tracking-wider">
+            {tableHeaders.map((header) => (
+              <th key={header} className="p-3">
+                {header}
+              </th>
+            ))}
+            <th className="p-3 rounded-tr-xl">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {courseData.length > 0 ? (
+            courseData.map((c, idx) => {
+              const encodedId = btoa(c._id);
+              const title = c.courseId?.title || c.title;
+              const description = c.courseId?.description || c.description;
+              return (
+                <tr
+                  key={title}
+                  className={`border-b transition duration-150 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100`}
+                >
+                  <td className="p-3 font-medium">{idx + 1}</td>
+                  <td className="p-3 font-semibold">
+                    {shortenText(title, 25)}
+                  </td>
+                  <td className="p-3 text-gray-600 truncate max-w-xs">
+                    {shortenText(description, 30)}
+                  </td>
+                  <td className="p-3">{formatDate(c.enrollmentDate)}</td>
+                  <td className="p-3">{formatDate(c.endDate)}</td>
+                  <td className="p-3">
+                    {
+                      c.status ? (
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${courseStatus(c.status)}`}
+                        >
+                          {c.status[0].toUpperCase() + c.status.slice(1).replace("-", " ")}
+                        </span>
+                      ) : (
+                        <span className={`px-8 py-2 rounded-full text-sm font-medium ${c.isActive ? "bg-green-500 text-white" : "bg-red-100 text-red-800"}`}>
+                          {c.isActive ? "Active" : "Inactive"}
+                        </span>
+                      )
+                    }
+                  </td>
+                  <td className="p-3 flex gap-3">
+                    <button
+                      onClick={() => navigate(`/user/enroll/${encodedId}`)}
+                      className="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
+                      <FiEye size={18} />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="7" className="text-center text-gray-500 py-6">
+                No courses available.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default UserCourseTable;

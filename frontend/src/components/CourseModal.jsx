@@ -34,7 +34,7 @@ const CourseModal = ({
     whatYouLearn: [""],
     requirements: [""],
     highlights: [""],
-    courseContent: [{ section: "", lectures: [{ title: "", duration: "" }], videoUrl: "" }],
+    courseContent: [{ section: "", lectures: [{ title: "", duration: "", videoUrl: "" }] }],
   });
 
   useEffect(() => {
@@ -62,12 +62,6 @@ const CourseModal = ({
     setFormData((prev) => ({ ...prev, courseContent: updated }));
   };
 
-  const handleVideoUrlChange = (index, value) => {
-    const updated = [...formData.courseContent];
-    updated[index].videoUrl = value;
-    setFormData((prev) => ({ ...prev, courseContent: updated }));
-  };
-
   const handleLectureChange = (sectionIndex, lectureIndex, field, value) => {
     const updated = [...formData.courseContent];
     updated[sectionIndex].lectures[lectureIndex][field] = value;
@@ -79,7 +73,7 @@ const CourseModal = ({
       ...prev,
       courseContent: [
         ...prev.courseContent,
-        { section: "", lectures: [{ title: "", duration: "" }], videoUrl: "" },
+        { section: "", lectures: [{ title: "", duration: "", videoUrl: "" }] },
       ],
     }));
   };
@@ -91,7 +85,7 @@ const CourseModal = ({
 
   const addLecture = (sectionIndex) => {
     const updated = [...formData.courseContent];
-    updated[sectionIndex].lectures.push({ title: "", duration: "" });
+    updated[sectionIndex].lectures.push({ title: "", duration: "", videoUrl: "" });
     setFormData((prev) => ({ ...prev, courseContent: updated }));
   };
 
@@ -131,7 +125,7 @@ const CourseModal = ({
       whatYouLearn: [""],
       requirements: [""],
       highlights: [""],
-      courseContent: [{ section: "", lectures: [{ title: "", duration: "" }], videoUrl: "" }],
+      courseContent: [{ section: "", lectures: [{ title: "", duration: "", videoUrl: "" }] }],
     });
     onClose();
   };
@@ -357,19 +351,6 @@ const CourseModal = ({
                         <FaTrash />
                       </button>
                     </div>
-                     <div className="col-span-3">
-                        <CustomInput
-                          type="url"
-                          label={`Lecture ${sectionIndex + 1} Video Url`}
-                          value={section.videoUrl}
-                          onChange={(value) =>
-                            handleVideoUrlChange(
-                              sectionIndex,
-                              value
-                            )
-                          }
-                        />
-                      </div>
                     {section.lectures.map((lecture, lectureIndex) => (
                       <div
                         key={lectureIndex}
@@ -415,6 +396,21 @@ const CourseModal = ({
                               <FaTrash />
                             </button>
                           )}
+                        </div>
+                        <div className="col-span-3">
+                          <CustomInput
+                            type="url"
+                            label={`Lecture ${lectureIndex + 1} Video Url`}
+                            value={lecture.videoUrl}
+                            onChange={(value) =>
+                              handleLectureChange(
+                                sectionIndex,
+                                lectureIndex,
+                                "videoUrl",
+                                value
+                              )
+                            }
+                          />
                         </div>
                       </div>
                     ))}
