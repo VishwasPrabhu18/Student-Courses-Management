@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import CourseSidebar from "../../components/userComp/CourseSidebar";
 import ProgressBar from "../../components/userComp/ProgressBar";
 import LecturePlayer from "../../components/userComp/LecturePlayer";
@@ -7,6 +6,8 @@ import UserLayout from "./UserLayout";
 import axiosConfig from "../../api/axiosConfig";
 import { useParams } from "react-router-dom";
 import { FaAnglesRight } from "react-icons/fa6";
+import LoadingDots from "../../components/LoadingDots";
+import InactiveCourseCard from "../../components/userComp/InactiveCourseCard";
 
 const EnrolledCourseDetails = () => {
   const { enrollmentId } = useParams();
@@ -31,6 +32,7 @@ const EnrolledCourseDetails = () => {
         setCourse(data?.data.course);
         setEnrollment(data?.data.enrollment);
         setCurrentLecture(data?.data.enrollment?.lectureInProgress[0].lectures[0]);
+
       } catch (err) {
         console.error(err);
         setError("Failed to load course details.");
@@ -42,82 +44,24 @@ const EnrolledCourseDetails = () => {
     fetchData();
   }, []);
 
-  const allLectures = useMemo(
-    () => (course ? course.courseContent.flatMap((s) => s.lectures) : []),
-    [course]
-  );
+  if (loading) {
+    return (
+      <UserLayout>
+        <LoadingDots />
+      </UserLayout>
+    );
+  }
 
-  // ✅ Update lecture progress (PATCH)
-  const handleProgressUpdate = async (lectureId, progress) => {
-    try {
-      await axios.patch(`/api/enrollments/${courseId}/progress`, {
-        lectureId,
-        progress,
-      });
-
-      setEnrollment((prev) => {
-        if (!prev) return prev;
-        const updatedLectureProgress = {
-          ...prev.lectureProgress,
-          [lectureId]: progress,
-        };
-
-        const completedLectures = Object.keys(updatedLectureProgress).filter(
-          (id) => updatedLectureProgress[id] >= 100
-        );
-
-        return {
-          ...prev,
-          lectureProgress: updatedLectureProgress,
-          completedLectures,
-          progress: (completedLectures.length / allLectures.length) * 100,
-        };
-      });
-    } catch (err) {
-      console.error("Failed to update progress", err);
-    }
-  };
-
-  // ✅ Mark complete
-  const markComplete = (lectureId) => {
-    handleProgressUpdate(lectureId, 100);
-  };
-
-  // ✅ Add note (POST)
-  const addNote = async (lectureId, content) => {
-    try {
-      const res = await axios.post(`/api/enrollments/${courseId}/notes`, {
-        lectureId,
-        content,
-      });
-
-      setEnrollment((prev) => ({
-        ...prev,
-        notes: [...prev.notes, res.data], // assuming API returns saved note
-      }));
-    } catch (err) {
-      console.error("Failed to add note", err);
-    }
-  };
-
-  // ✅ Navigation
-  const goToNextLecture = () => {
-    const idx = allLectures.findIndex((l) => l.id === currentLecture.id);
-    if (idx < allLectures.length - 1) {
-      setCurrentLecture(allLectures[idx + 1]);
-    }
-  };
-
-  const goToPrevLecture = () => {
-    const idx = allLectures.findIndex((l) => l.id === currentLecture.id);
-    if (idx > 0) {
-      setCurrentLecture(allLectures[idx - 1]);
-    }
-  };
-
-  if (loading) return <div className="p-6">Loading course...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
   if (!course || !enrollment) return null;
+
+  if(course.isActive === false) {
+    return (
+      <UserLayout>
+        <InactiveCourseCard />
+      </UserLayout>
+    );
+  }
 
   return (
     <UserLayout>
@@ -158,6 +102,7 @@ const EnrolledCourseDetails = () => {
             <LecturePlayer
               lecture={currentLecture}
               courseId={course?._id}
+              setEnrollment={setEnrollment}
             />
           </div>
         </div>

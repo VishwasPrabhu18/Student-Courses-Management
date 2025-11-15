@@ -56,15 +56,27 @@ export const getCourseById = async (req, res) => {
 
     const enrollment = await EnrollmentModal.findOne({ userId, courseId });
 
-    res
-      .status(200)
-      .json({
-        message: "Course fetched successfully",
-        data: courseData,
-        enrolled: !!enrollment,
-      });
+    res.status(200).json({
+      message: "Course fetched successfully",
+      data: courseData,
+      enrolled: !!enrollment,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+const updateEnrollmentLectureContent = async (
+  courseId,
+  updatedCourseContent
+) => {
+  try {
+    await EnrollmentModal.updateMany(
+      { courseId },
+      { $set: { lectureInProgress: updatedCourseContent, progress: 0 } }
+    );
+  } catch (error) {
+    console.error("Error updating enrollment lecture content:", error);
   }
 };
 
@@ -86,6 +98,9 @@ export const updateCourse = async (req, res) => {
         updatedCourse.thumbnail.contentType
       };base64,${updatedCourse.thumbnail.data.toString("base64")}`;
     }
+
+    updateEnrollmentLectureContent(id, updatedCourse.courseContent);
+
     const courseData = { ...updatedCourse._doc, thumbnail: thumbnailBase64 };
     res.status(200).json(courseData);
   } catch (error) {

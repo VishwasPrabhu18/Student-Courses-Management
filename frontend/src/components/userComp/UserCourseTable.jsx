@@ -9,7 +9,7 @@ const UserCourseTable = ({ courseData, tableHeaders }) => {
     <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="bg-gradient-to-r from-blue-100 to-blue-200 text-left text-gray-700 uppercase text-xs tracking-wider">
+          <tr className="bg-linear-to-r from-blue-100 to-blue-200 text-left text-gray-700 uppercase text-xs tracking-wider">
             {tableHeaders.map((header) => (
               <th key={header} className="p-3">
                 {header}
@@ -43,7 +43,7 @@ const UserCourseTable = ({ courseData, tableHeaders }) => {
                     {
                       c.status ? (
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${courseStatus(c.status)}`}
+                          className={`px-4 py-2 rounded-full text-xs font-medium ${courseStatus(c.status)}`}
                         >
                           {c.status[0].toUpperCase() + c.status.slice(1).replace("-", " ")}
                         </span>

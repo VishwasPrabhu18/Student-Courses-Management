@@ -34,22 +34,10 @@ const enrollmentSchema = new mongoose.Schema(
           {
             title: { type: String, default: "" },
             duration: { type: String, default: "" },
+            videoUrl: { type: String, default: "" },
+            isDone: { type: Boolean, default: false },
           },
         ],
-      },
-    ],
-    completedLectures: [
-      {
-        section: { type: String },
-        lectureTitle: { type: String },
-        completedAt: { type: Date, default: Date.now },
-      },
-    ],
-    notes: [
-      {
-        lectureTitle: { type: String },
-        content: { type: String },
-        createdAt: { type: Date, default: Date.now },
       },
     ],
     lastAccessed: {

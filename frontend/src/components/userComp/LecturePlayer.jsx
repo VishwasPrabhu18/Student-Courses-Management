@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import { Check, CheckCircle2 } from "lucide-react";
-import { FaCheck, FaCheckCircle } from "react-icons/fa";
-import axios from "axios";
 import { toast } from "react-toastify";
 import axiosConfig from "../../api/axiosConfig";
 
-const LecturePlayer = ({ lecture, vedioCompleted, courseId }) => {
+const LecturePlayer = ({ lecture, vedioCompleted, courseId, setEnrollment }) => {
   const [duration, setDuration] = useState(0);
   const [completed, setCompleted] = useState(false);
   const [started, setStarted] = useState(false);
-  console.log(lecture);
+  const [isLectureDone, setIsLectureDone] = useState(false);
 
+  console.log(lecture);
+  
 
   useEffect(() => {
-    setCompleted(false);
+    setCompleted(lecture.isDone);
+    setIsLectureDone(lecture.isDone);
     setDuration(0);
   }, [lecture]);
 
@@ -33,7 +34,7 @@ const LecturePlayer = ({ lecture, vedioCompleted, courseId }) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await axiosConfig.put(`/api/users/lecture-complete/${courseId}`,
+      const res = await axiosConfig.post(`/api/users/lecture-complete/${courseId}`,
         {
           lectureId: lecture._id,
         },
@@ -44,9 +45,14 @@ const LecturePlayer = ({ lecture, vedioCompleted, courseId }) => {
         });
       if (res.status === 200) {
         toast.success(`Lecture "${lecture.title}" marked as completed!`);
+        setEnrollment(res?.data?.enrollment);
+        
+        // Update local state to reflect completion without page reload
+        setIsLectureDone(true);
       }
     } catch (error) {
       console.error("Error marking lecture as completed:", error);
+      toast.error("Failed to mark lecture as completed. Please try again.");
     }
   }
 
@@ -62,7 +68,7 @@ const LecturePlayer = ({ lecture, vedioCompleted, courseId }) => {
                 src={lecture.videoUrl}
                 width="100%"
                 height="100%"
-                controls={false}
+                controls={true}
                 onDurationChange={(d) => setDuration(d.target.duration)}
                 onEnded={handleEnded}
                 onStart={handleStart}
@@ -112,13 +118,13 @@ const LecturePlayer = ({ lecture, vedioCompleted, courseId }) => {
       }
       <div className="my-4 w-full flex items-center justify-center">
         {
-          lecture.isDone ? (
+          isLectureDone ? (
             <button
               className="px-7 py-3 rounded bg-green-600 text-white hover:bg-green-700 transition-colors"
             >
               <span className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
-                Completed
+                You have already completed this lecture
               </span>
             </button>
           ) : (

@@ -187,16 +187,30 @@ export const getProfileData = async (req, res) => {
     const user = await UserModel.findById(id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const enrollments = await EnrollmentModal.find({ userId: id })
-      .populate("courseId", "title description") // only bring the course title
-      .select("enrollmentDate endDate status courseId");
-
     let profilePicBase64 = null;
-    if (user.profilePic) {
+    if (user.profilePic.data !== undefined) {
       profilePicBase64 = `data:${
         user.profilePic.contentType
       };base64,${user.profilePic.data.toString("base64")}`;
     }
+
+    if (user.role === "admin") {
+      res.status(200).json({
+        message: "Profile data fetched successfully",
+        data: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          profilePic: profilePicBase64,
+          phoneNumber: user.phoneNumber,
+          joinedDate: user.createdAt,
+        },
+      });
+    }
+
+    const enrollments = await EnrollmentModal.find({ userId: id })
+      .populate("courseId", "title description") // only bring the course title
+      .select("enrollmentDate endDate status courseId");
 
     res.status(200).json({
       message: "Profile data fetched successfully",
@@ -232,7 +246,7 @@ export const enrollToCourse = async (req, res) => {
       courseId,
       enrollmentDate: startDate,
       endDate: endDate,
-      lectureInProgress: course.courseContent
+      lectureInProgress: course.courseContent,
     });
 
     res.status(201).json({
@@ -273,10 +287,60 @@ export const getEnrollmentDetails = async (req, res) => {
     const course = await CoursesModel.findById(enrollment?.courseId);
 
     if (!enrollment || !course) {
-      return res.status(404).json({ message: !enrollment ? "Enrollment not found" : "Course not found" });
+      return res
+        .status(404)
+        .json({
+          message: !enrollment ? "Enrollment not found" : "Course not found",
+        });
     }
 
     res.json({ course, enrollment });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const lectureCompleted = async (req, res) => {
+  const userId = req.user.id;
+  const { courseId } = req.params;
+  const { lectureId } = req.body;
+
+  try {
+    const enrollment = await EnrollmentModal.findOne({ userId, courseId });
+    if (!enrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+    // Update the lecture's isDone status
+    enrollment.lectureInProgress.forEach((section) => {
+      section.lectures.forEach((lecture) => {
+        if (lecture._id.toString() === lectureId) {
+          lecture.isDone = true;
+        }
+      });
+    });
+
+    enrollment.status = "in-progress";
+
+    const lectureCount = enrollment.lectureInProgress.reduce(
+      (acc, section) => acc + section.lectures.length,
+      0
+    );
+    const completedLectureCount = enrollment.lectureInProgress.reduce(
+      (acc, section) => {
+        return (
+          acc + section.lectures.filter((lecture) => lecture.isDone).length
+        );
+      },
+      0
+    );
+
+    enrollment.progress = (completedLectureCount / lectureCount) * 100;
+
+    await enrollment.save();
+
+    res
+      .status(200)
+      .json({ message: "Lecture marked as completed", enrollment });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FiX, FiCreditCard, FiCheckCircle, FiLoader } from "react-icons/fi";
 import axiosConfig from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import { shortenText } from "../constants/helperMethods";
 
 const PaymentModal = ({ isOpen, onClose, course }) => {
   const [cardNumber, setCardNumber] = useState("");
@@ -90,7 +91,7 @@ const PaymentModal = ({ isOpen, onClose, course }) => {
             {course && (
               <div className="mb-4">
                 <h3 className="font-medium text-gray-700">{course.title}</h3>
-                <p className="text-sm text-gray-500">{course.description}</p>
+                <p className="text-sm text-gray-500">{shortenText(course.description,100)}</p>
                 <p className="mt-2 font-semibold text-green-600 text-lg">
                   ₹
                   {course.offeredPrice > 0

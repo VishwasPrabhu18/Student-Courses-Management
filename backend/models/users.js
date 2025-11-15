@@ -4,13 +4,13 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
 
   lastName: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
 
   email: {
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     unique: true,
-    lowerCase: true
+    lowerCase: true,
   },
 
   phoneNumber: {
@@ -30,12 +30,12 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
 
   role: {
     type: String,
-    default: "user"
+    default: "user",
   },
 
   profilePic: {
@@ -43,11 +43,11 @@ const userSchema = new mongoose.Schema({
     contentType: String,
   },
 
-  createdAt:{
-    type:Date,
-    default:new Date()
-  }
-})
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+});
 
 const UserModel = mongoose.model("User", userSchema);
 

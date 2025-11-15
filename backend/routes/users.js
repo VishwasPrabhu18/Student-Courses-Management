@@ -10,6 +10,7 @@ import {
   enrollToCourse,
   alreadyEnrolled,
   getEnrollmentDetails,
+  lectureCompleted,
 } from "../controllers/users.js";
 import authMiddleware from "../middleware/middleware.js";
 
@@ -25,5 +26,6 @@ userRouter.get("/profile", authMiddleware, getProfileData);
 userRouter.post("/enroll/:courseId", authMiddleware, enrollToCourse);
 userRouter.get("/enrolled/:courseId", authMiddleware, alreadyEnrolled);
 userRouter.get("/:enrollmentId/enrollment", authMiddleware, getEnrollmentDetails);
+userRouter.post("/lecture-complete/:courseId", authMiddleware, lectureCompleted);
 
 export default userRouter;
